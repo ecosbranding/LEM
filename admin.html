@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LEM Admin | ORCA Studios</title>
+    <title>LEM Admin Elite | ORCA</title>
     
-    <!-- Librerías: Escáner y Firebase -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
@@ -26,7 +25,7 @@
             text-align: center;
         }
 
-        .header { margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        .header { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #222; }
         
         /* Contenedor del Escáner */
         #reader { 
@@ -34,62 +33,74 @@
             max-width: 400px; 
             margin: 0 auto; 
             border: 2px solid var(--lem-gold) !important;
-            border-radius: 20px;
+            border-radius: 25px;
             overflow: hidden;
-            background: #111;
+            background: #000;
         }
 
         .admin-card {
-            background: #111;
-            border: 1px solid var(--lem-cafe);
-            border-radius: 25px;
-            padding: 20px;
+            background: #0a0a0a;
+            border: 1px solid var(--lem-gold);
+            border-radius: 30px;
+            padding: 25px;
             margin-top: 20px;
-            display: none; /* Se activa al escanear */
+            display: none;
+            box-shadow: 0 10px 30px rgba(120, 67, 17, 0.2);
         }
 
         .btn-action {
             background: var(--lem-gold);
             color: #000;
             border: none;
-            padding: 15px 30px;
-            border-radius: 12px;
+            padding: 18px 25px;
+            border-radius: 15px;
             font-weight: bold;
             text-transform: uppercase;
-            margin: 10px;
+            margin: 8px;
             cursor: pointer;
+            transition: 0.3s;
         }
 
-        .btn-reset { background: #444; color: #fff; }
+        .btn-scan-again {
+            background: transparent;
+            color: var(--lem-gold);
+            border: 1px solid var(--lem-gold);
+            margin-top: 20px;
+            width: 100%;
+        }
 
-        .status-msg { color: var(--lem-verde); font-weight: bold; margin-top: 15px; }
+        .status-msg { color: var(--lem-verde); font-weight: bold; margin-top: 15px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2 style="color: var(--lem-gold); letter-spacing: 2px; margin: 0;">LEM MODA</h2>
-        <p style="font-size: 0.7rem; color: #666; margin: 5px 0;">PANEL DE CONTROL ADMINISTRATIVO</p>
+        <h2 style="color: var(--lem-gold); letter-spacing: 3px; margin: 0;">LEM MODA</h2>
+        <p style="font-size: 0.65rem; color: #555; margin: 5px 0; letter-spacing: 1px;">PANEL ADMINISTRATIVO</p>
     </div>
 
-    <!-- Sección de Escaneo -->
-    <div id="reader"></div>
+    <div id="reader-container">
+        <div id="reader"></div>
+    </div>
 
-    <!-- Panel de Gestión de Cliente -->
     <div id="adminPanel" class="admin-card">
-        <h3 id="clientName" style="margin-top: 0; color: var(--lem-gold);">Cliente</h3>
-        <p style="font-size: 0.9rem;">Puntos actuales: <span id="currentPoints" style="font-size: 1.5rem; color: var(--lem-verde);">0</span></p>
+        <h3 id="clientPhone" style="margin-top: 0; color: var(--lem-gold); font-size: 1.1rem;">WhatsApp: ---</h3>
+        <p style="font-size: 0.9rem; margin: 15px 0;">Puntos actuales: <span id="currentPoints" style="font-size: 1.8rem; color: var(--lem-verde);">0</span></p>
         
-        <button class="btn-action" onclick="adjustPoints(1)">+ Añadir Sello</button>
-        <button class="btn-action btn-reset" onclick="adjustPoints(-1)">- Quitar</button>
-        <br>
-        <button class="btn-action" style="background: red; color: white;" onclick="resetPoints()">Resetear Tarjeta</button>
+        <div style="display: flex; justify-content: center; gap: 10px;">
+            <button class="btn-action" onclick="adjustPoints(1)">+ AÑADIR SELLO</button>
+            <button class="btn-action" style="background: #333; color: #fff;" onclick="adjustPoints(-1)">- QUITAR</button>
+        </div>
+        
+        <button class="btn-action" style="background: #cc0000; color: white; width: 80%; font-size: 0.7rem; margin-top: 15px;" onclick="resetPoints()">RESETEAR TARJETA</button>
         
         <p id="logMsg" class="status-msg"></p>
+        
+        <!-- BOTÓN SOLICITADO: VOLVER A ESCANEAR -->
+        <button class="btn-action btn-scan-again" onclick="restartScanner()">VOLVER A ESCANEAR</button>
     </div>
 
     <script>
-        // CONFIGURACIÓN FIREBASE
         const firebaseConfig = { 
             databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
             appId: "1:901791881107:web:e1ff85e3fc768064eeba66"
@@ -98,28 +109,34 @@
         const db = firebase.database();
 
         let activeUser = null;
+        let html5QrcodeScanner;
 
-        // INICIALIZAR ESCÁNER
-        function onScanSuccess(decodedText) {
-            activeUser = decodedText; // El QR contiene el teléfono
-            loadUserData(activeUser);
-            // Detener escáner temporalmente para procesar
-            html5QrcodeScanner.clear();
+        function startScanner() {
+            html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+                fps: 10, 
+                qrbox: {width: 250, height: 250},
+                rememberLastUsedCamera: true,
+                aspectRatio: 1.0
+            });
+            
+            html5QrcodeScanner.render(onScanSuccess);
         }
 
-        const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-        html5QrcodeScanner.render(onScanSuccess);
+        function onScanSuccess(decodedText) {
+            activeUser = decodedText;
+            document.getElementById('reader-container').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('logMsg').innerText = "";
+            loadUserData(activeUser);
+            html5QrcodeScanner.clear();
+        }
 
         function loadUserData(phone) {
             db.ref('lem_users/' + phone).once('value', (snap) => {
                 const data = snap.val();
                 if (data) {
-                    document.getElementById('adminPanel').style.display = 'block';
-                    document.getElementById('clientName').innerText = "WhatsApp: " + phone;
+                    document.getElementById('clientPhone').innerText = "WhatsApp: " + phone;
                     document.getElementById('currentPoints').innerText = data.puntos || 0;
-                } else {
-                    alert("Cliente no encontrado.");
-                    location.reload();
                 }
             });
         }
@@ -138,13 +155,24 @@
         }
 
         function resetPoints() {
-            if (confirm("¿Estás seguro de limpiar todos los sellos de este cliente?")) {
+            if (confirm("¿Resetear puntos de este cliente?")) {
                 db.ref('lem_users/' + activeUser + '/puntos').set(0).then(() => {
                     document.getElementById('currentPoints').innerText = 0;
                     document.getElementById('logMsg').innerText = "Tarjeta reseteada.";
                 });
             }
         }
+
+        // FUNCIÓN SOLICITADA: REINICIAR ESCÁNER
+        function restartScanner() {
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('reader-container').style.display = 'block';
+            activeUser = null;
+            startScanner();
+        }
+
+        // Iniciar al cargar
+        window.onload = startScanner;
     </script>
 </body>
 </html>
