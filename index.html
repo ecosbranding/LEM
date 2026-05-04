@@ -3,165 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LEM MODA | Acceso Privado</title>
+    <title>LEM MODA | Loyalty Card</title>
     
-    <!-- Scripts de Firebase -->
+    <meta name="application-name" content="LEM Loyalty">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LEM Loyalty">
+    
+    <link rel="apple-touch-icon" href="1.png.png">
+    <link rel="manifest" href="manifest.json">
+    
+    <meta name="theme-color" content="#c5a075">
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
-
+    
     <style>
-        :root {
-            --ebano: #1c140e;
-            --ebano-claro: #3d2b1f;
-            --came: #c5a075;
-            --blanco: #ffffff;
-            --negro-puro: #0a0a0a;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--ebano) 0%, var(--ebano-claro) 100%);
-            color: var(--blanco);
-            font-family: 'Inter', sans-serif;
+        :root { --lem-came: #c5a075; --lem-ebano: #1c140e; }
+        body { background: var(--lem-ebano); color: #fff; font-family: 'Inter', sans-serif; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-y: auto; }
+        .container { width: 90%; max-width: 380px; text-align: center; padding: 20px 0; }
+        
+        /* === LOGO CIRCULAR (Identidad LEM MODA) === */
+        .brand-circle {
+            width: 120px;
+            height: 120px;
+            background: #fff; 
+            border-radius: 50%; 
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .login-card {
-            background: rgba(10, 10, 10, 0.4);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(197, 160, 117, 0.15);
-            padding: 45px 35px;
-            border-radius: 30px;
-            text-align: center;
-            width: 85%;
-            max-width: 380px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-        }
-
-        .logo-wrapper {
-            width: 130px;
-            height: 130px;
-            background: var(--blanco);
-            border-radius: 50%;
-            margin: 0 auto 35px;
-            display: flex;
             justify-content: center;
-            align-items: center;
-            border: 2px solid var(--came);
-            box-shadow: 0 0 20px rgba(197, 160, 117, 0.3);
+            margin: 0 auto 30px;
+            border: 3px solid var(--lem-came); 
+            box-shadow: 0 0 25px rgba(197, 160, 117, 0.4); 
+            position: relative;
         }
-
-        .logo-wrapper img { width: 70%; height: auto; }
-
-        h2 {
-            color: var(--came);
-            letter-spacing: 5px;
-            font-weight: 200;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            margin-bottom: 40px;
+        
+        .circle-logo {
+            width: 70%; 
+            height: auto;
+            object-fit: contain;
         }
+        
+        /* Tarjeta de Lealtad Premium */
+        .card { background: rgba(10, 10, 10, 0.4); border: 1px solid rgba(197, 160, 117, 0.2); border-radius: 30px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); width: 100%; box-sizing: border-box; backdrop-filter: blur(10px); }
+        .card-logo-box { background: #fff; border-radius: 12px; padding: 10px; display: inline-block; margin-bottom: 20px; }
+        .card-logo { width: 130px; }
+        
+        /* Grilla de Sellos */
+        .stamp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+        .slot { aspect-ratio: 1; background: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid #222; overflow: hidden; }
+        .slot.active { background: var(--lem-came); border: none; }
+        
+        /* Logo blanco nítido (2.png.png) en cada casilla activa */
+        .slot img { width: 60%; display: none; }
+        .slot.active img { display: block; filter: brightness(0) saturate(100%) invert(10%) sepia(21%) saturate(1054%) hue-rotate(341deg) brightness(95%) contrast(92%); }
 
-        .input-field {
-            width: 100%;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(197, 160, 117, 0.1);
-            background: var(--negro-puro);
-            color: var(--blanco);
-            font-size: 1.1rem;
-            text-align: center;
-            box-sizing: border-box;
-        }
+        .slot::before { content: attr(data-index); color: #333; font-weight: bold; position: absolute; }
+        .slot.active::before { display: none; }
+        
+        /* QR UI */
+        #qrcode-container { background: #fff; padding: 10px; border-radius: 15px; display: inline-block; margin: 15px 0; }
+        
+        /* Formularios */
+        .input-box { background: #000; border: 1px solid #333; color: #fff; padding: 15px; border-radius: 12px; width: 100%; margin-bottom: 15px; box-sizing: border-box; text-align: center; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+        .input-box:focus { border-color: var(--lem-came); }
+        .btn-main { background: var(--lem-came); color: var(--lem-ebano); border: none; padding: 18px; border-radius: 12px; width: 100%; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+        .footer { margin-top: 25px; font-size: 0.65rem; color: #555; letter-spacing: 1px; }
 
-        .btn-access {
-            width: 100%;
-            padding: 20px;
-            border-radius: 15px;
-            border: none;
-            background: var(--came);
-            color: var(--ebano);
-            font-weight: 700;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.4s;
-            margin-top: 15px;
-        }
-
-        footer {
-            margin-top: 45px;
-            font-size: 0.6rem;
-            color: rgba(197, 160, 117, 0.5);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
+        /* Overlay de éxito */
+        #success-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.96); z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .success-card { background: var(--lem-ebano); border: 1px solid var(--lem-came); border-radius: 30px; padding: 30px; width: 85%; max-width: 350px; text-align: center; }
     </style>
 </head>
 <body>
+    <div id="success-overlay">
+        <div class="success-card">
+            <div class="card-logo-box"><img src="1.png.png" style="width: 120px;"></div>
+            <h2 style="color: var(--lem-came); margin: 15px 0;">¡Felicidades!</h2>
+            <p style="font-size: 0.95rem; color: #ccc; margin-bottom: 25px; line-height: 1.6;">Has completado tu tarjeta de lealtad. Presenta esta pantalla en caja para reclamar tu beneficio exclusivo de LEM MODA.</p>
+            <button class="btn-main" onclick="location.reload()">Entendido</button>
+        </div>
+    </div>
 
-    <div class="login-card">
-        <div class="logo-wrapper">
-            <img src="1.png" alt="LEM">
+    <div class="container">
+        <!-- Panel de Ingreso -->
+        <div id="authPanel">
+            <div class="brand-circle">
+                <img src="1.png.png" class="circle-logo" alt="Logo LEM">
+            </div>
+            <h3 style="font-weight: 400; margin-bottom: 25px; letter-spacing: 2px; color: var(--lem-came);">BIENVENIDO</h3>
+            <input type="tel" id="userPhone" class="input-box" placeholder="WhatsApp">
+            <input type="password" id="userPin" class="input-box" placeholder="PIN de 4 dígitos" maxlength="4">
+            <button class="btn-main" onclick="accessSystem()">Ingresar</button>
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #888;">
+                ¿Nuevo aquí? <span style="color: var(--lem-came); font-weight: bold;">Ingresa tus datos para registrarte</span>
+            </p>
         </div>
 
-        <h2>MEMBER ACCESS</h2>
+        <!-- Panel de Tarjeta Digital -->
+        <div id="cardPanel" style="display:none">
+            <div class="card">
+                <div class="card-logo-box"><img src="1.png.png" class="card-logo"></div>
+                <div class="stamp-grid" id="stampGrid"></div>
+                <p id="counterLabel" style="color: var(--lem-came); font-weight: bold; font-size: 0.9rem;">Cargando beneficios...</p>
+                <div id="qrcode-container"><canvas id="qr-canvas"></canvas></div>
+                <p style="color:#555; font-size:0.6rem; font-weight:bold; letter-spacing: 2px; margin-top: 15px;">EXCLUSIVIDAD • ESTILO • LEALTAD</p>
+            </div>
+            <button class="btn-main" style="margin-top:20px; background:#000; color: #fff; border: 1px solid #333;" onclick="location.reload()">Cerrar Sesión</button>
+        </div>
 
-        <input type="tel" id="phone" class="input-field" placeholder="TELÉFONO">
-        <input type="password" id="pin" class="input-field" placeholder="PIN" maxlength="4">
-
-        <button class="btn-access" id="btnMain" onclick="handleLogin()">INGRESAR</button>
-
-        <footer>Powered by <b>ORCA Studios</b></footer>
+        <div class="footer">Desarrollado por <span style="color: var(--lem-came); font-weight: bold;">ORCA Studios</span></div>
     </div>
 
     <script>
-        // Configuración con tu URL confirmada
-        const firebaseConfig = {
-            apiKey: "AIzaSyAlgwjQ4QomHqqHfp5GRJa6bq2mwuWaTH0",
-            authDomain: "lemmoda-3ab92.firebaseapp.com",
-            projectId: "lemmoda-3ab92",
-            databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/", // URL ACTUALIZADA
+        // CONFIGURACIÓN FIREBASE LEM MODA
+        const firebaseConfig = { 
+            databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
             appId: "1:901791881107:web:e1ff85e3fc768064eeba66"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function handleLogin() {
-            const phone = document.getElementById('phone').value;
-            const pin = document.getElementById('pin').value;
-            const btn = document.getElementById('btnMain');
+        function accessSystem() {
+            const phone = document.getElementById('userPhone').value.trim();
+            const pin = document.getElementById('userPin').value.trim();
 
-            if(!phone || !pin) {
-                alert("Por favor, completa los campos.");
-                return;
-            }
+            if(phone.length < 9 || pin.length < 4) return alert("Completa tus datos correctamente.");
 
-            btn.innerText = "VERIFICANDO...";
-            btn.disabled = true;
+            const userRef = db.ref('lem_users/' + phone);
 
-            // Buscamos al usuario en la base de datos
-            db.ref('lem_users/' + phone).once('value')
-            .then((snapshot) => {
-                const user = snapshot.val();
-                if(user && user.pin === pin) {
-                    localStorage.setItem('session_lem', phone);
-                    window.location.href = "card.html";
+            userRef.once('value', (snapshot) => {
+                const userData = snapshot.val();
+
+                if (!userData) {
+                    // REGISTRO AUTOMÁTICO: Guarda PIN y puntos iniciales
+                    userRef.set({ pin: pin, puntos: 0 }).then(() => login(phone));
                 } else {
-                    alert("Usuario o PIN no registrados.");
-                    btn.innerText = "INGRESAR";
-                    btn.disabled = false;
+                    // VALIDACIÓN DE PIN MAESTRO
+                    if (userData.pin === pin) {
+                        login(phone);
+                    } else {
+                        alert("El PIN ingresado es incorrecto.");
+                    }
                 }
-            })
-            .catch((error) => {
-                alert("Error de conexión: " + error.message);
-                btn.innerText = "INGRESAR";
-                btn.disabled = false;
+            });
+        }
+
+        function login(phone) {
+            document.getElementById('authPanel').style.display = 'none';
+            document.getElementById('cardPanel').style.display = 'block';
+            QRCode.toCanvas(document.getElementById('qr-canvas'), phone, { width: 140, margin: 1 });
+
+            // Escuchar cambios en los puntos (sellos)
+            db.ref('lem_users/' + phone + '/puntos').on('value', (snap) => {
+                const count = snap.val() || 0;
+                document.getElementById('counterLabel').innerText = `${count} de 8 beneficios obtenidos`;
+                
+                const grid = document.getElementById('stampGrid');
+                grid.innerHTML = ''; 
+
+                for(let i=0; i<8; i++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'slot' + (i < count ? ' active' : '');
+                    slot.setAttribute('data-index', i + 1);
+                    // Sello nítido usando tu logo 2.png.png
+                    slot.innerHTML = `<img src="2.png.png" alt="Sello LEM">`; 
+                    grid.appendChild(slot);
+                }
+
+                if (count >= 8) {
+                    setTimeout(() => {
+                        document.getElementById('success-overlay').style.display = 'flex';
+                    }, 600);
+                }
+            });
+        }
+
+        // SERVICE WORKER PARA PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error', err));
             });
         }
     </script>
