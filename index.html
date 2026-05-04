@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LEM MODA | Private Access</title>
     
+    <!-- SDKs de Firebase Compat -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
     <style>
         :root {
-            --ebano: #1c140e; /* Ébano profundo para el fondo */
-            --ebano-claro: #3d2b1f; /* Ébano para elementos */
-            --came: #c5a075; /* Color arena/dorado para resaltar */
+            --ebano: #1c140e;
+            --ebano-claro: #3d2b1f;
+            --came: #c5a075;
             --blanco: #ffffff;
             --negro-puro: #0a0a0a;
         }
 
         body {
-            /* Degradado en tonos Ébano para evitar el negro total */
             background: linear-gradient(135deg, var(--ebano) 0%, var(--ebano-claro) 100%);
             color: var(--blanco);
             font-family: 'Inter', sans-serif;
@@ -51,7 +51,6 @@
             justify-content: center;
             align-items: center;
             border: 2px solid var(--came);
-            /* Resplandor suave en color Came */
             box-shadow: 0 0 20px rgba(197, 160, 117, 0.3);
         }
 
@@ -77,13 +76,6 @@
             font-size: 1.1rem;
             text-align: center;
             box-sizing: border-box;
-            transition: 0.3s;
-        }
-
-        .input-field:focus {
-            border-color: var(--came);
-            outline: none;
-            background: #000;
         }
 
         .btn-access {
@@ -91,7 +83,6 @@
             padding: 20px;
             border-radius: 15px;
             border: none;
-            /* El botón ahora es el elemento que más resalta en Came */
             background: var(--came);
             color: var(--ebano);
             font-weight: 700;
@@ -100,11 +91,6 @@
             cursor: pointer;
             transition: 0.4s;
             margin-top: 15px;
-        }
-
-        .btn-access:active {
-            transform: scale(0.96);
-            background: var(--blanco);
         }
 
         footer {
@@ -128,15 +114,22 @@
         <input type="tel" id="phone" class="input-field" placeholder="TELÉFONO" autocomplete="off">
         <input type="password" id="pin" class="input-field" placeholder="PIN" maxlength="4">
 
-        <button class="btn-access" onclick="handleLogin()">INGRESAR</button>
+        <button class="btn-access" id="btnMain" onclick="handleLogin()">INGRESAR</button>
 
         <footer>Powered by <b>ORCA Studios</b></footer>
     </div>
 
     <script>
+        // Configuración actualizada con tus datos de LEM MODA
         const firebaseConfig = {
-            databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
-            appId: "1:901791881107:web:e1ff85e3fc768064eeba66"
+            apiKey: "AIzaSyAlgwjQ4QomHqqHfp5GRJa6bq2mwuWaTH0",
+            authDomain: "lemmoda-3ab92.firebaseapp.com",
+            projectId: "lemmoda-3ab92",
+            storageBucket: "lemmoda-3ab92.firebasestorage.app",
+            messagingSenderId: "901791881107",
+            appId: "1:901791881107:web:e1ff85e3fc768064eeba66",
+            // IMPORTANTE: URL de la base de datos para lemmoda-3ab92
+            databaseURL: "https://lemmoda-3ab92-default-rtdb.firebaseio.com/"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -145,16 +138,17 @@
         function handleLogin() {
             const phone = document.getElementById('phone').value;
             const pin = document.getElementById('pin').value;
-            const btn = document.querySelector('.btn-access');
+            const btn = document.getElementById('btnMain');
 
             if(!phone || !pin) {
-                alert("Campos requeridos");
+                alert("Campos obligatorios");
                 return;
             }
 
             btn.innerText = "VERIFICANDO...";
             btn.disabled = true;
 
+            // Buscamos en la colección de usuarios de LEM
             db.ref('lem_users/' + phone).once('value')
             .then((snapshot) => {
                 const user = snapshot.val();
@@ -162,13 +156,14 @@
                     localStorage.setItem('session_lem', phone);
                     window.location.href = "card.html";
                 } else {
-                    alert("Datos incorrectos");
+                    alert("Datos incorrectos. Intenta de nuevo.");
                     btn.innerText = "INGRESAR";
                     btn.disabled = false;
                 }
             })
             .catch((error) => {
-                alert("Error de red. Intenta de nuevo.");
+                console.error(error);
+                alert("Error: Revisa las reglas de Realtime Database.");
                 btn.innerText = "INGRESAR";
                 btn.disabled = false;
             });
