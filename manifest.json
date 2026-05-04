@@ -1,15 +1,17 @@
 {
-  "short_name": "LEM Admin",
-  "name": "LEM MODA Administración",
+  "name": "LEM MODA Loyalty",
+  "short_name": "LEM MODA",
+  "id": "/lem-loyalty-app",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#784311",
   "icons": [
     {
       "src": "1.png.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ],
-  "start_url": "/admin.html",
-  "display": "standalone",
-  "theme_color": "#784311",
-  "background_color": "#000000"
+  ]
 }
