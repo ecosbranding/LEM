@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LEM Admin Elite | ORCA Studios</title>
     
-    <!-- Configuración PWA Específica para Admin -->
     <link rel="manifest" href="manifest-admin.json">
     <meta name="theme-color" content="#784311">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-    <!-- Librerías -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
@@ -108,15 +106,15 @@
     </div>
 
     <script>
-        // FORZAR REGISTRO PARA INSTALACIÓN
+        // Registro del nuevo Service Worker separado
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                navigator.serviceWorker.register('./sw-admin.js', { scope: './' })
                     .then(reg => {
-                        console.log('Admin SW registrado');
-                        reg.update(); // Busca actualizaciones del manifiesto inmediatamente
+                        console.log('Admin App registrada con éxito');
+                        reg.update();
                     })
-                    .catch(err => console.log('Error SW:', err));
+                    .catch(err => console.log('Error de registro:', err));
             });
         }
 
@@ -136,7 +134,7 @@
             const config = { fps: 15, qrbox: { width: 250, height: 250 } };
             
             try {
-                // Inicio directo con cámara trasera (environment)
+                // Forzar cámara trasera directamente
                 await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
             } catch (err) {
                 console.error("Error de cámara:", err);
