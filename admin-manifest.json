@@ -1,14 +1,14 @@
 {
-  "name": "Lem Moda Admin",
-  "short_name": "Lem Admin",
-  "id": "/lem-admin-exclusive",
+  "name": "LEM MODA Admin",
+  "short_name": "LEM Admin",
+  "id": "/lem-admin-interface",
   "start_url": "./admin.html",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#3d2b1f",
+  "background_color": "#000000",
+  "theme_color": "#784311",
   "icons": [
     {
-      "src": "1.png",
+      "src": "1.png.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
