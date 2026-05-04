@@ -2,153 +2,70 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LEM Moda | Acceso</title>
-    
-    <!-- Scripts de Firebase Compat (Necesarios para que el botón funcione) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEM MODA | Admin Panel</title>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
-
     <style>
-        body {
-            background-color: #0a0a0a;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .login-container {
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-        }
-
-        .logo-circle {
-            width: 150px;
-            height: 150px;
-            background-color: white;
-            border-radius: 50%;
-            margin: 0 auto 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 20px rgba(255,255,255,0.1);
-        }
-
-        .logo-circle img {
-            width: 80%;
-            height: auto;
-        }
-
-        h2 {
-            letter-spacing: 5px;
-            font-weight: 300;
-            color: #c5a075; /* Tono dorado de Lem Moda */
-            margin-bottom: 30px;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-        }
-
-        input {
-            width: 100%;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 15px;
-            border: 1px solid #222;
-            background-color: #1a1a1a;
-            color: white;
-            font-size: 1.1rem;
-            text-align: center;
-            box-sizing: border-box;
-        }
-
-        .btn-ingresar {
-            width: 100%;
-            padding: 20px;
-            border-radius: 15px;
-            border: none;
-            background-color: #3d2b1f; /* Café ébano de tu diseño */
-            color: white;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            transition: background 0.3s;
-        }
-
-        .btn-ingresar:active {
-            background-color: #5a4030;
-        }
-
-        footer {
-            margin-top: 50px;
-            font-size: 0.7rem;
-            color: #555;
-            letter-spacing: 1px;
-        }
+        :root { --ebano: #1c140e; --came: #c5a075; --blanco: #ffffff; }
+        body { background: var(--ebano); color: white; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .admin-card { background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px; border: 1px solid var(--came); width: 90%; max-width: 400px; text-align: center; }
+        h1 { color: var(--came); letter-spacing: 3px; font-size: 1.2rem; text-transform: uppercase; }
+        input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none; background: #000; color: white; text-align: center; box-sizing: border-box; }
+        .btn-register { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--came); color: var(--ebano); font-weight: bold; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="login-container">
-        <div class="logo-circle">
-            <!-- Asegúrate de que el logo se llame 1.png -->
-            <img src="1.png" alt="Logo">
-        </div>
+    <div class="admin-card">
+        <h1>Registrar Cliente</h1>
+        <p style="font-size: 0.8rem; color: #888;">LEM MODA Loyalty System</p>
+        
+        <input type="tel" id="newPhone" placeholder="Número de Teléfono">
+        <input type="text" id="newName" placeholder="Nombre del Cliente">
+        <input type="password" id="newPin" placeholder="Asignar PIN (4 dígitos)" maxlength="4">
 
-        <h2>MEMBER ACCESS</h2>
-
-        <input type="tel" id="phoneInput" placeholder="0979010077" maxlength="10">
-        <input type="password" id="pinInput" placeholder="••••" maxlength="4">
-
-        <button class="btn-ingresar" id="btnIngresar" onclick="login()">INGRESAR</button>
-
-        <footer>Ecosistema por <b>ORCA Studios</b></footer>
+        <button class="btn-register" onclick="registerUser()">Guardar en Base de Datos</button>
+        <div id="status" style="margin-top: 15px; font-size: 0.9rem;"></div>
     </div>
 
     <script>
-        // CONFIGURACIÓN TÉCNICA REPARADA
         const firebaseConfig = {
-            databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/", 
+            databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
             appId: "1:901791881107:web:e1ff85e3fc768064eeba66"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function login() {
-            const phone = document.getElementById('phoneInput').value;
-            const pin = document.getElementById('pinInput').value;
-            const btn = document.getElementById('btnIngresar');
+        function registerUser() {
+            const phone = document.getElementById('newPhone').value;
+            const name = document.getElementById('newName').value;
+            const pin = document.getElementById('newPin').value;
+            const status = document.getElementById('status');
 
-            if (phone === "" || pin === "") {
-                alert("Por favor llena todos los campos");
+            if(!phone || !name || !pin) {
+                alert("Completa todos los campos");
                 return;
             }
 
-            btn.innerText = "VALIDANDO...";
-            btn.disabled = true;
-
-            // Lógica de conexión con la base de datos
-            db.ref('lem_users/' + phone).once('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.pin === pin) {
-                    localStorage.setItem('userPhone', phone);
-                    window.location.href = "card.html"; 
-                } else {
-                    alert("Teléfono o PIN incorrectos");
-                    btn.innerText = "INGRESAR";
-                    btn.disabled = false;
-                }
-            }).catch(e => {
-                alert("Error de conexión");
-                btn.innerText = "INGRESAR";
-                btn.disabled = false;
+            // Esta función CREA el usuario automáticamente en Firebase
+            db.ref('lem_users/' + phone).set({
+                nombre: name,
+                pin: pin,
+                puntos: 0,
+                fecha_registro: new Date().toISOString()
+            })
+            .then(() => {
+                status.style.color = "#4CAF50";
+                status.innerText = "¡Cliente registrado con éxito!";
+                // Limpiar campos
+                document.getElementById('newPhone').value = "";
+                document.getElementById('newName').value = "";
+                document.getElementById('newPin').value = "";
+            })
+            .catch((error) => {
+                status.style.color = "#FF5252";
+                status.innerText = "Error: " + error.message;
             });
         }
     </script>
