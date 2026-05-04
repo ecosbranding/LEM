@@ -3,20 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LEM Admin | Direct Scan</title>
+    <title>LEM Admin Elite | ORCA Studios</title>
     
+    <!-- Configuración para PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#784311">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!-- Librerías -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
 
     <style>
-        :root { --lem-gold: #d4a373; --lem-verde: #38b000; }
-        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 20px; text-align: center; }
+        :root { 
+            --lem-cafe: #784311; 
+            --lem-gold: #d4a373; 
+            --lem-verde: #38b000;
+        }
+
+        body { 
+            background: #000; 
+            color: #fff; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            text-align: center;
+        }
+
         .header { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #222; }
-        #reader { width: 100%; max-width: 400px; margin: 0 auto; border-radius: 25px; overflow: hidden; background: #000; border: 2px solid var(--lem-gold); }
-        .admin-card { background: #0a0a0a; border: 1px solid var(--lem-gold); border-radius: 30px; padding: 25px; margin-top: 20px; display: none; }
-        .btn-action { background: var(--lem-gold); color: #000; border: none; padding: 18px 25px; border-radius: 15px; font-weight: bold; text-transform: uppercase; margin: 8px; cursor: pointer; width: 45%; }
-        .btn-scan-again { background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold); margin-top: 20px; width: 100%; text-transform: uppercase; padding: 15px; border-radius: 15px; font-weight: bold; }
+        
+        #reader { 
+            width: 100%; 
+            max-width: 400px; 
+            margin: 0 auto; 
+            border: 2px solid var(--lem-gold) !important;
+            border-radius: 25px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .admin-card {
+            background: #0a0a0a;
+            border: 1px solid var(--lem-gold);
+            border-radius: 30px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+            box-shadow: 0 10px 30px rgba(120, 67, 17, 0.3);
+        }
+
+        .btn-action {
+            background: var(--lem-gold);
+            color: #000;
+            border: none;
+            padding: 18px 25px;
+            border-radius: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 8px;
+            cursor: pointer;
+            width: 45%;
+        }
+
+        .btn-scan-again {
+            background: transparent;
+            color: var(--lem-gold);
+            border: 1px solid var(--lem-gold);
+            margin-top: 20px;
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
         .status-msg { color: var(--lem-verde); font-weight: bold; margin-top: 15px; }
     </style>
 </head>
@@ -24,7 +86,7 @@
 
     <div class="header">
         <h2 style="color: var(--lem-gold); letter-spacing: 3px; margin: 0;">LEM MODA</h2>
-        <p style="font-size: 0.65rem; color: #555; margin: 5px 0;">CONTROL DIRECTO</p>
+        <p style="font-size: 0.65rem; color: #555; margin: 5px 0;">ADMINISTRACIÓN DIRECTA</p>
     </div>
 
     <div id="reader-container">
@@ -32,17 +94,28 @@
     </div>
 
     <div id="adminPanel" class="admin-card">
-        <h3 id="clientPhone" style="color: var(--lem-gold); font-size: 1.1rem;">WhatsApp: ---</h3>
+        <h3 id="clientPhone" style="color: var(--lem-gold); font-size: 1.1rem;">Cargando...</h3>
         <p>Puntos actuales: <span id="currentPoints" style="font-size: 1.8rem; color: var(--lem-verde);">0</span></p>
+        
         <div style="display: flex; justify-content: center;">
             <button class="btn-action" onclick="adjustPoints(1)">+ SELLO</button>
             <button class="btn-action" style="background: #333; color: #fff;" onclick="adjustPoints(-1)">- QUITAR</button>
         </div>
+        
         <p id="logMsg" class="status-msg"></p>
+        
         <button class="btn-scan-again" onclick="restartScanner()">VOLVER A ESCANEAR</button>
     </div>
 
     <script>
+        // Registro de Service Worker para permitir instalación
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
+            });
+        }
+
+        // Configuración Firebase
         const firebaseConfig = { 
             databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
             appId: "1:901791881107:web:e1ff85e3fc768064eeba66"
@@ -55,10 +128,10 @@
 
         async function startScanner() {
             html5QrCode = new Html5Qrcode("reader");
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            const config = { fps: 15, qrbox: { width: 250, height: 250 } };
             
             try {
-                // FORZAMOS CAMARA TRASERA (environment)
+                // Forzar cámara trasera directamente
                 await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
             } catch (err) {
                 console.error("Error al iniciar cámara:", err);
@@ -70,6 +143,7 @@
             html5QrCode.stop().then(() => {
                 document.getElementById('reader-container').style.display = 'none';
                 document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('logMsg').innerText = "";
                 loadUserData(activeUser);
             });
         }
@@ -90,7 +164,7 @@
             ref.transaction((current) => (current || 0) + change, (error, committed, snapshot) => {
                 if (committed) {
                     document.getElementById('currentPoints').innerText = snapshot.val();
-                    document.getElementById('logMsg').innerText = "¡Actualizado!";
+                    document.getElementById('logMsg').innerText = "¡Actualizado con éxito!";
                 }
             });
         }
@@ -98,7 +172,6 @@
         function restartScanner() {
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('reader-container').style.display = 'block';
-            document.getElementById('logMsg').innerText = "";
             startScanner();
         }
 
