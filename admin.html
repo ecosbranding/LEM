@@ -4,24 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LEM Admin Elite | ORCA Studios</title>
-    <!-- Configuración para la Instalación de Admin -->
-    <link rel="manifest" href="manifest-admin.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="theme-color" content="#784311">
-
-    <script>
-      // Registro del Service Worker para habilitar la instalación
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Admin App lista'))
-            .catch(err => console.log('Error de instalación', err));
-        });
-      }
-    </script>
     
-    <!-- Configuración para PWA -->
+    <!-- Configuración PWA Específica para Admin -->
     <link rel="manifest" href="manifest-admin.json">
     <meta name="theme-color" content="#784311">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -110,7 +94,7 @@
     </div>
 
     <div id="adminPanel" class="admin-card">
-        <h3 id="clientPhone" style="color: var(--lem-gold); font-size: 1.1rem;">Cargando...</h3>
+        <h3 id="clientPhone" style="color: var(--lem-gold); font-size: 1.1rem;">WhatsApp: ---</h3>
         <p>Puntos actuales: <span id="currentPoints" style="font-size: 1.8rem; color: var(--lem-verde);">0</span></p>
         
         <div style="display: flex; justify-content: center;">
@@ -124,14 +108,19 @@
     </div>
 
     <script>
-        // Registro de Service Worker para permitir instalación
+        // FORZAR REGISTRO PARA INSTALACIÓN
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                    .then(reg => {
+                        console.log('Admin SW registrado');
+                        reg.update(); // Busca actualizaciones del manifiesto inmediatamente
+                    })
+                    .catch(err => console.log('Error SW:', err));
             });
         }
 
-        // Configuración Firebase
+        // Configuración Firebase (Pre-aplicada para LEM MODA)
         const firebaseConfig = { 
             databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
             appId: "1:901791881107:web:e1ff85e3fc768064eeba66"
@@ -147,10 +136,10 @@
             const config = { fps: 15, qrbox: { width: 250, height: 250 } };
             
             try {
-                // Forzar cámara trasera directamente
+                // Inicio directo con cámara trasera (environment)
                 await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
             } catch (err) {
-                console.error("Error al iniciar cámara:", err);
+                console.error("Error de cámara:", err);
             }
         }
 
@@ -180,7 +169,7 @@
             ref.transaction((current) => (current || 0) + change, (error, committed, snapshot) => {
                 if (committed) {
                     document.getElementById('currentPoints').innerText = snapshot.val();
-                    document.getElementById('logMsg').innerText = "¡Actualizado con éxito!";
+                    document.getElementById('logMsg').innerText = "¡Puntos actualizados!";
                 }
             });
         }
