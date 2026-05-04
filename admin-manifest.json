@@ -1,7 +1,7 @@
 {
   "name": "LEM Admin",
   "short_name": "LEM Admin",
-  "id": "/lem-moda-admin-secure",
+  "id": "lem-moda-admin-final-v1",
   "start_url": "./admin.html",
   "display": "standalone",
   "background_color": "#000000",
@@ -10,8 +10,7 @@
     {
       "src": "2.png.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
