@@ -1,0 +1,17 @@
+{
+  "name": "Lem Moda",
+  "short_name": "Lem Moda",
+  "id": "/lem-customer-app",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#3d2b1f",
+  "icons": [
+    {
+      "src": "2.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
