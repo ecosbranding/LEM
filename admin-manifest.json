@@ -1,7 +1,7 @@
 {
-  "name": "LEM MODA Admin",
+  "name": "LEM Admin",
   "short_name": "LEM Admin",
-  "id": "/lem-admin-interface",
+  "id": "/lem-moda-admin-secure",
   "start_url": "./admin.html",
   "display": "standalone",
   "background_color": "#000000",
