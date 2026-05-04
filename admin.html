@@ -2,71 +2,148 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LEM MODA | Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LEM Admin | ORCA Studios</title>
+    
+    <!-- Librerías: Escáner y Firebase -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+
     <style>
-        :root { --ebano: #1c140e; --came: #c5a075; --blanco: #ffffff; }
-        body { background: var(--ebano); color: white; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .admin-card { background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px; border: 1px solid var(--came); width: 90%; max-width: 400px; text-align: center; }
-        h1 { color: var(--came); letter-spacing: 3px; font-size: 1.2rem; text-transform: uppercase; }
-        input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: none; background: #000; color: white; text-align: center; box-sizing: border-box; }
-        .btn-register { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--came); color: var(--ebano); font-weight: bold; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
+        :root { 
+            --lem-cafe: #784311; 
+            --lem-gold: #d4a373; 
+            --lem-verde: #38b000;
+        }
+
+        body { 
+            background: #000; 
+            color: #fff; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header { margin-bottom: 30px; border-bottom: 1px solid #222; padding-bottom: 20px; }
+        
+        /* Contenedor del Escáner */
+        #reader { 
+            width: 100%; 
+            max-width: 400px; 
+            margin: 0 auto; 
+            border: 2px solid var(--lem-gold) !important;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #111;
+        }
+
+        .admin-card {
+            background: #111;
+            border: 1px solid var(--lem-cafe);
+            border-radius: 25px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none; /* Se activa al escanear */
+        }
+
+        .btn-action {
+            background: var(--lem-gold);
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        .btn-reset { background: #444; color: #fff; }
+
+        .status-msg { color: var(--lem-verde); font-weight: bold; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="admin-card">
-        <h1>Registrar Cliente</h1>
-        <p style="font-size: 0.8rem; color: #888;">LEM MODA Loyalty System</p>
-        
-        <input type="tel" id="newPhone" placeholder="Número de Teléfono">
-        <input type="text" id="newName" placeholder="Nombre del Cliente">
-        <input type="password" id="newPin" placeholder="Asignar PIN (4 dígitos)" maxlength="4">
+    <div class="header">
+        <h2 style="color: var(--lem-gold); letter-spacing: 2px; margin: 0;">LEM MODA</h2>
+        <p style="font-size: 0.7rem; color: #666; margin: 5px 0;">PANEL DE CONTROL ADMINISTRATIVO</p>
+    </div>
 
-        <button class="btn-register" onclick="registerUser()">Guardar en Base de Datos</button>
-        <div id="status" style="margin-top: 15px; font-size: 0.9rem;"></div>
+    <!-- Sección de Escaneo -->
+    <div id="reader"></div>
+
+    <!-- Panel de Gestión de Cliente -->
+    <div id="adminPanel" class="admin-card">
+        <h3 id="clientName" style="margin-top: 0; color: var(--lem-gold);">Cliente</h3>
+        <p style="font-size: 0.9rem;">Puntos actuales: <span id="currentPoints" style="font-size: 1.5rem; color: var(--lem-verde);">0</span></p>
+        
+        <button class="btn-action" onclick="adjustPoints(1)">+ Añadir Sello</button>
+        <button class="btn-action btn-reset" onclick="adjustPoints(-1)">- Quitar</button>
+        <br>
+        <button class="btn-action" style="background: red; color: white;" onclick="resetPoints()">Resetear Tarjeta</button>
+        
+        <p id="logMsg" class="status-msg"></p>
     </div>
 
     <script>
-        const firebaseConfig = {
+        // CONFIGURACIÓN FIREBASE
+        const firebaseConfig = { 
             databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
             appId: "1:901791881107:web:e1ff85e3fc768064eeba66"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function registerUser() {
-            const phone = document.getElementById('newPhone').value;
-            const name = document.getElementById('newName').value;
-            const pin = document.getElementById('newPin').value;
-            const status = document.getElementById('status');
+        let activeUser = null;
 
-            if(!phone || !name || !pin) {
-                alert("Completa todos los campos");
-                return;
-            }
+        // INICIALIZAR ESCÁNER
+        function onScanSuccess(decodedText) {
+            activeUser = decodedText; // El QR contiene el teléfono
+            loadUserData(activeUser);
+            // Detener escáner temporalmente para procesar
+            html5QrcodeScanner.clear();
+        }
 
-            // Esta función CREA el usuario automáticamente en Firebase
-            db.ref('lem_users/' + phone).set({
-                nombre: name,
-                pin: pin,
-                puntos: 0,
-                fecha_registro: new Date().toISOString()
-            })
-            .then(() => {
-                status.style.color = "#4CAF50";
-                status.innerText = "¡Cliente registrado con éxito!";
-                // Limpiar campos
-                document.getElementById('newPhone').value = "";
-                document.getElementById('newName').value = "";
-                document.getElementById('newPin').value = "";
-            })
-            .catch((error) => {
-                status.style.color = "#FF5252";
-                status.innerText = "Error: " + error.message;
+        const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+
+        function loadUserData(phone) {
+            db.ref('lem_users/' + phone).once('value', (snap) => {
+                const data = snap.val();
+                if (data) {
+                    document.getElementById('adminPanel').style.display = 'block';
+                    document.getElementById('clientName').innerText = "WhatsApp: " + phone;
+                    document.getElementById('currentPoints').innerText = data.puntos || 0;
+                } else {
+                    alert("Cliente no encontrado.");
+                    location.reload();
+                }
             });
+        }
+
+        function adjustPoints(change) {
+            if (!activeUser) return;
+            const ref = db.ref('lem_users/' + activeUser + '/puntos');
+            ref.transaction((current) => {
+                return (current || 0) + change;
+            }, (error, committed, snapshot) => {
+                if (committed) {
+                    document.getElementById('currentPoints').innerText = snapshot.val();
+                    document.getElementById('logMsg').innerText = "¡Puntos actualizados!";
+                }
+            });
+        }
+
+        function resetPoints() {
+            if (confirm("¿Estás seguro de limpiar todos los sellos de este cliente?")) {
+                db.ref('lem_users/' + activeUser + '/puntos').set(0).then(() => {
+                    document.getElementById('currentPoints').innerText = 0;
+                    document.getElementById('logMsg').innerText = "Tarjeta reseteada.";
+                });
+            }
         }
     </script>
 </body>
