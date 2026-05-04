@@ -3,173 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LEM Admin | Boutique Control</title>
+    <title>LEM Moda | Acceso</title>
     
-    <link rel="manifest" href="admin-manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <!-- Tema en Café Ébano -->
-    <meta name="theme-color" content="#3d2b1f">
-
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <!-- Scripts de Firebase Compat (Necesarios para que el botón funcione) -->
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
-    
+
     <style>
-        :root { 
-            --lem-coffee: #3d2b1f; 
-            --lem-gold: #a68966;
-            --lem-dark: #0a0a0a; 
-        }
-        
-        body { 
-            background: var(--lem-dark); 
-            color: #fff; 
-            font-family: 'Inter', sans-serif; 
-            margin: 0; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 100vh; 
-            overflow: hidden; 
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
 
-        .container { width: 90%; max-width: 380px; text-align: center; }
-        
-        /* Círculo de marca minimalista para Admin */
-        .brand-circle {
-            width: 90px; height: 90px; 
-            background: #fff;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px; border: 2px solid var(--lem-gold); 
-            box-shadow: 0 0 20px rgba(166, 137, 102, 0.2);
-        }
-        .circle-logo { width: 65%; }
-
-        .card { 
-            background: #111; 
-            border: 1px solid #222; 
-            border-radius: 25px; 
-            padding: 25px; 
-            position: relative; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
-        
-        /* Escáner con borde dorado */
-        #reader { 
-            width: 100%; 
-            border-radius: 15px; 
-            overflow: hidden; 
-            border: 2px solid var(--lem-coffee) !important; 
+        .login-container {
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
         }
 
-        /* Overlay de éxito refinado */
-        #scanner-overlay {
-            display: none; position: absolute; top: 25px; left: 25px; right: 25px; bottom: 105px;
-            background: rgba(10, 10, 10, 0.95); border-radius: 15px; z-index: 10;
-            align-items: center; justify-content: center; flex-direction: column;
-            border: 1px solid var(--lem-gold);
+        .logo-circle {
+            width: 150px;
+            height: 150px;
+            background-color: white;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
         }
 
-        .status-box { 
-            margin-top: 20px; 
-            padding: 18px; 
-            border-radius: 12px; 
-            background: #050505; 
-            font-size: 0.85rem; 
-            border: 1px solid #1a1a1a; 
+        .logo-circle img {
+            width: 80%;
+            height: auto;
+        }
+
+        h2 {
+            letter-spacing: 5px;
+            font-weight: 300;
+            color: #c5a075; /* Tono dorado de Lem Moda */
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            border: 1px solid #222;
+            background-color: #1a1a1a;
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .btn-ingresar {
+            width: 100%;
+            padding: 20px;
+            border-radius: 15px;
+            border: none;
+            background-color: #3d2b1f; /* Café ébano de tu diseño */
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transition: background 0.3s;
+        }
+
+        .btn-ingresar:active {
+            background-color: #5a4030;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 0.7rem;
+            color: #555;
             letter-spacing: 1px;
-            text-transform: uppercase;
         }
-
-        .btn-next { 
-            background: var(--lem-coffee); 
-            color: #fff; 
-            border: none; 
-            padding: 16px; 
-            border-radius: 10px; 
-            width: 100%; 
-            font-weight: bold; 
-            margin-top: 15px; 
-            display: none; 
-            cursor: pointer; 
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: 0.3s;
-        }
-        .btn-next:active { transform: scale(0.98); background: var(--lem-gold); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Logo 1.png para el cabezal de administración -->
-        <div class="brand-circle"><img src="1.png" class="circle-logo"></div>
-        <h2 style="letter-spacing: 4px; font-weight: 200; margin-bottom: 25px; color: var(--lem-gold); font-size: 1.2rem;">BOUTIQUE ADMIN</h2>
-        
-        <div class="card">
-            <div id="scanner-overlay">
-                <!-- Icono de check en color dorado de la marca -->
-                <span style="color: var(--lem-gold); font-size: 3rem;">●</span>
-                <p style="font-weight: 300; letter-spacing: 3px; margin-top: 10px;">SELLO REGISTRADO</p>
-            </div>
-            <div id="reader"></div>
-            <div class="status-box" id="status">Iniciando Escáner...</div>
-            <button id="nextBtn" class="btn-next" onclick="resetScanner()">Siguiente Cliente</button>
+
+    <div class="login-container">
+        <div class="logo-circle">
+            <!-- Asegúrate de que el logo se llame 1.png -->
+            <img src="1.png" alt="Logo">
         </div>
-        <p style="font-size: 0.55rem; color: #444; margin-top: 25px; letter-spacing: 2px;">TECNOLOGÍA POR ORCA STUDIOS • V.2.0</p>
+
+        <h2>MEMBER ACCESS</h2>
+
+        <input type="tel" id="phoneInput" placeholder="0979010077" maxlength="10">
+        <input type="password" id="pinInput" placeholder="••••" maxlength="4">
+
+        <button class="btn-ingresar" id="btnIngresar" onclick="login()">INGRESAR</button>
+
+        <footer>Ecosistema por <b>ORCA Studios</b></footer>
     </div>
 
     <script>
-        // Configuración apuntando a la colección de Lem Moda
-        const firebaseConfig = { databaseURL: "https://lem-moda-loyalty.firebaseio.com/" };
+        // CONFIGURACIÓN TÉCNICA REPARADA
+        const firebaseConfig = {
+            databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/", 
+            appId: "1:901791881107:web:e1ff85e3fc768064eeba66"
+        };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let canScan = true; 
+        function login() {
+            const phone = document.getElementById('phoneInput').value;
+            const pin = document.getElementById('pinInput').value;
+            const btn = document.getElementById('btnIngresar');
 
-        function onScanSuccess(decodedText) {
-            if (!canScan) return; 
-            canScan = false; 
+            if (phone === "" || pin === "") {
+                alert("Por favor llena todos los campos");
+                return;
+            }
 
-            const activePhone = decodedText;
-            const statusEl = document.getElementById('status');
-            const overlay = document.getElementById('scanner-overlay');
-            const nextBtn = document.getElementById('nextBtn');
-            
-            statusEl.innerHTML = `Cliente: <b style="color: var(--lem-gold)">${activePhone}</b>`;
-            
-            // Transacción en la ruta específica de Lem
-            const ref = db.ref('lem_users/' + activePhone + '/stamps');
-            ref.transaction((current) => (current || 0) + 1, (error, committed) => {
-                if (committed) {
-                    if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
-                    statusEl.innerHTML = `<span style="color: var(--lem-gold)">ASIGNACIÓN EXITOSA</span>`;
-                    overlay.style.display = 'flex';
-                    nextBtn.style.display = 'block';
+            btn.innerText = "VALIDANDO...";
+            btn.disabled = true;
+
+            // Lógica de conexión con la base de datos
+            db.ref('lem_users/' + phone).once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.pin === pin) {
+                    localStorage.setItem('userPhone', phone);
+                    window.location.href = "card.html"; 
                 } else {
-                    canScan = true;
-                    statusEl.innerText = "Error de enlace. Reintenta.";
-                    statusEl.style.color = "#ff4444";
+                    alert("Teléfono o PIN incorrectos");
+                    btn.innerText = "INGRESAR";
+                    btn.disabled = false;
                 }
+            }).catch(e => {
+                alert("Error de conexión");
+                btn.innerText = "INGRESAR";
+                btn.disabled = false;
             });
         }
-
-        function resetScanner() {
-            canScan = true;
-            document.getElementById('scanner-overlay').style.display = 'none';
-            document.getElementById('nextBtn').style.display = 'none';
-            document.getElementById('status').innerText = "Esperando código QR...";
-            document.getElementById('status').style.color = "#fff";
-        }
-
-        const html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start(
-            { facingMode: "environment" }, 
-            { fps: 20, qrbox: { width: 220, height: 220 } }, 
-            onScanSuccess
-        ).catch(err => {
-            document.getElementById('status').innerText = "Acceso a cámara denegado.";
-            document.getElementById('status').style.color = "#ff4444";
-        });
     </script>
 </body>
 </html>
