@@ -20,9 +20,113 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     
     <style>
-        :root { --lem-came: #c5a075; --lem-ebano: #1c140e; }
-        body { background: var(--lem-ebano); color: #fff; font-family: 'Inter', sans-serif; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow-y: auto; }
-        .container { width: 90%; max-width: 380px; text-align: center; padding: 20px 0; }
+    :root { 
+        --lem-cafe-dark: #784311; /* Café Principal */
+        --lem-gold: #d4a373;      /* Dorado Arena */
+        --lem-verde: #38b000;     /* Verde Renovación */
+        --lem-negro: #000000;
+        --lem-blanco: #ffffff;
+    }
+
+    body { 
+        background: radial-gradient(circle, #2a1806 0%, #000000 100%); 
+        color: var(--lem-blanco); 
+        font-family: 'Inter', 'Lora', serif; 
+        margin: 0; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        min-height: 100vh; 
+    }
+
+    .container { width: 90%; max-width: 380px; text-align: center; }
+
+    /* Logo con halo de luz sutil */
+    .brand-circle {
+        width: 130px;
+        height: 130px;
+        background: var(--lem-blanco);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 40px;
+        border: 1px solid var(--lem-gold);
+        box-shadow: 0 0 30px rgba(212, 163, 115, 0.2);
+    }
+
+    .circle-logo { width: 75%; height: auto; }
+
+    /* Tarjeta Efecto Cristal (Glassmorphism) */
+    .card { 
+        background: rgba(120, 67, 17, 0.05); 
+        border: 1px solid rgba(212, 163, 115, 0.3); 
+        border-radius: 40px; 
+        padding: 30px; 
+        backdrop-filter: blur(15px);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    }
+
+    /* Grilla de Sellos de Autor */
+    .stamp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 25px 0; }
+    
+    .slot { 
+        aspect-ratio: 1; 
+        background: rgba(0,0,0,0.6); 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        border: 1px solid rgba(212, 163, 115, 0.1); 
+        transition: all 0.5s ease;
+    }
+
+    .slot.active { 
+        background: var(--lem-blanco); 
+        border: 2px solid var(--lem-verde);
+        box-shadow: 0 0 15px rgba(56, 176, 0, 0.3);
+    }
+
+    /* El sello cambia a verde LEM al activarse */
+    .slot.active img { 
+        width: 65%;
+        filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(76deg) brightness(98%) contrast(100%); 
+    }
+
+    /* Botonería de Lujo */
+    .btn-main { 
+        background: linear-gradient(135deg, #d4a373 0%, #b08968 100%);
+        color: #000; 
+        border: none; 
+        padding: 20px; 
+        border-radius: 18px; 
+        width: 100%; 
+        font-weight: 600; 
+        text-transform: uppercase; 
+        letter-spacing: 3px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+
+    .input-box { 
+        background: rgba(0,0,0,0.8); 
+        border: 1px solid rgba(212, 163, 115, 0.2); 
+        color: #fff; 
+        padding: 18px; 
+        border-radius: 15px; 
+        width: 100%; 
+        margin-bottom: 15px; 
+        box-sizing: border-box; 
+        text-align: center;
+    }
+
+    #counterLabel { 
+        color: var(--lem-gold); 
+        font-size: 0.8rem; 
+        letter-spacing: 2px; 
+        text-transform: uppercase;
+        margin-bottom: 20px;
+    }
+</style>
         
         /* === LOGO CIRCULAR (Identidad LEM MODA) === */
         .brand-circle {
