@@ -63,9 +63,17 @@
 
         .slot.active { background: #fff; border: 2px solid var(--lem-verde); }
         .slot img { width: 60%; display: none; }
-        .slot.active img { 
-            display: block; 
-            filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(76deg) brightness(98%) contrast(100%); 
+      /* Grilla de Sellos Actualizada */
+.slot.active { 
+    background: #fff; /* Mantiene el fondo blanco para resaltar el logo */
+    border: 2px solid var(--lem-verde); /* Mantiene el contorno verde de éxito */
+}
+
+.slot.active img { 
+    display: block; 
+    filter: none; /* ELIMINA el tinte verde para mostrar el color original */
+    width: 65%; /* Ajuste leve para que luzca impecable */
+    
         }
 
         .slot::before { content: attr(data-index); color: #444; font-weight: bold; position: absolute; font-size: 0.7rem; }
