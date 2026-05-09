@@ -23,6 +23,19 @@
         .btn-action { background: var(--lem-gold); color: #000; border: none; padding: 18px 25px; border-radius: 15px; font-weight: bold; text-transform: uppercase; margin: 8px; width: 45%; }
         .btn-scan-again { background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold); margin-top: 20px; width: 100%; padding: 15px; border-radius: 15px; font-weight: bold; text-transform: uppercase; }
         .status-msg { color: var(--lem-verde); font-weight: bold; margin-top: 15px; }
+
+        /* NUEVOS ESTILOS PARA ALERTAS ADMIN */
+        .reward-alert { 
+            background: rgba(56, 176, 0, 0.1); border: 1px dashed var(--lem-verde); 
+            padding: 15px; border-radius: 15px; margin: 15px 0; display: none;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .btn-reset { background: #660000; color: #fff; border: none; padding: 10px; border-radius: 10px; font-size: 0.7rem; margin-top: 10px; width: 100%; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -39,16 +52,24 @@
     <div id="adminPanel" class="admin-card">
         <h3 id="clientPhone" style="color: var(--lem-gold);">WhatsApp: ---</h3>
         <p>Puntos: <span id="currentPoints" style="font-size: 1.8rem; color: var(--lem-verde);">0</span></p>
+        
+        <!-- Alerta de Premio para el Admin -->
+        <div id="adminRewardAlert" class="reward-alert">
+            <span id="rewardText" style="color: var(--lem-verde); font-size: 0.9rem; font-weight: bold;"></span>
+        </div>
+
         <div style="display: flex; justify-content: center;">
             <button class="btn-action" onclick="adjustPoints(1)">+ SELLO</button>
             <button class="btn-action" style="background: #333; color: #fff;" onclick="adjustPoints(-1)">- QUITAR</button>
         </div>
+
+        <button id="resetBtn" class="btn-reset" style="display:none;" onclick="resetCard()">REINICIAR TARJETA (PREMIO ENTREGADO)</button>
+
         <p id="logMsg" class="status-msg"></p>
         <button class="btn-scan-again" onclick="restartScanner()">VOLVER A ESCANEAR</button>
     </div>
 
     <script>
-        // Registro del Service Worker para forzar la instalación de Admin
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw-admin.js', { scope: './' })
@@ -79,23 +100,53 @@
         }
 
         function loadUserData(phone) {
-            db.ref('lem_users/' + phone).once('value', (snap) => {
+            db.ref('lem_users/' + phone).on('value', (snap) => {
                 const data = snap.val();
+                const puntos = data ? (data.puntos || 0) : 0;
                 document.getElementById('clientPhone').innerText = "WhatsApp: " + phone;
-                document.getElementById('currentPoints').innerText = data ? (data.puntos || 0) : 0;
+                document.getElementById('currentPoints').innerText = puntos;
+                updateAdminAlerts(puntos);
             });
+        }
+
+        function updateAdminAlerts(puntos) {
+            const alertBox = document.getElementById('adminRewardAlert');
+            const alertText = document.getElementById('rewardText');
+            const resetBtn = document.getElementById('resetBtn');
+
+            if (puntos === 4) {
+                alertBox.style.display = 'block';
+                alertText.innerText = "ENTREGAR: 50% DESCUENTO";
+                resetBtn.style.display = 'none';
+            } else if (puntos >= 8) {
+                alertBox.style.display = 'block';
+                alertText.innerText = "ENTREGAR: PRENDA DE REGALO";
+                resetBtn.style.display = 'block'; // Permite reiniciar tras dar el gran premio
+            } else {
+                alertBox.style.display = 'none';
+                resetBtn.style.display = 'none';
+            }
         }
 
         function adjustPoints(change) {
-            // Lógica simplificada de actualización
             const phone = document.getElementById('clientPhone').innerText.replace("WhatsApp: ", "");
             const ref = db.ref('lem_users/' + phone + '/puntos');
-            ref.transaction((c) => (c || 0) + change, (err, comm, snap) => {
-                if (comm) document.getElementById('currentPoints').innerText = snap.val();
+            ref.transaction((c) => {
+                let newVal = (c || 0) + change;
+                return newVal < 0 ? 0 : newVal;
             });
         }
 
+        function resetCard() {
+            if(confirm("¿Confirmas que ya entregaste el premio y quieres reiniciar los puntos a 0?")) {
+                const phone = document.getElementById('clientPhone').innerText.replace("WhatsApp: ", "");
+                db.ref('lem_users/' + phone + '/puntos').set(0);
+            }
+        }
+
         function restartScanner() {
+            const phone = document.getElementById('clientPhone').innerText.replace("WhatsApp: ", "");
+            db.ref('lem_users/' + phone).off(); // Detener escucha anterior
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('reader-container').style.display = 'block';
             startScanner();
