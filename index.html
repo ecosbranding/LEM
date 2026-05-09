@@ -11,7 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
-    <!-- Librería para el efecto de confeti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
@@ -83,7 +82,6 @@
             cursor: pointer;
         }
 
-        /* NUEVOS ESTILOS: Beneficios y Alertas */
         .btn-beneficios {
             background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold);
             padding: 10px 20px; border-radius: 20px; margin-bottom: 15px;
@@ -120,7 +118,6 @@
     </style>
 </head>
 <body>
-    <!-- Modal de Beneficios -->
     <div id="modalBeneficios" class="modal">
         <div class="modal-content">
             <h3 style="color: var(--lem-gold); letter-spacing: 2px;">BENEFICIOS LEM</h3>
@@ -227,7 +224,7 @@
             if (p === 4) {
                 lanzarConfeti();
                 overlay.style.display = 'flex';
-                title.innerText = "¡Hito Alcanzado!";
+                title.innerText = "¡Recompensa Alcanzada!";
                 msg.innerText = "¡Felicidades! Por tus 4 estampas tienes el 50% de descuento en una prenda.";
                 waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white;" onclick="enviarWA('${phone}', 4)">Reclamar por WhatsApp</button>`;
                 
@@ -237,7 +234,7 @@
             else if (p >= 8) {
                 lanzarConfeti();
                 overlay.style.display = 'flex';
-                title.innerText = "¡Máximo Nivel!";
+                title.innerText = "¡Nivel Completado!";
                 msg.innerText = "¡Increíble! Has completado las 8 estampas. ¡Tu prenda de regalo te espera!";
                 waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white;" onclick="enviarWA('${phone}', 8)">Reclamar Regalo</button>`;
                 
@@ -253,12 +250,26 @@
         }
 
         function enviarWA(phone, hito) {
-            const texto = hito === 4 
-                ? `¡Hola LEM MODA! He completado mis 4 estampas (Tel: ${phone}) y quiero mi 50% de descuento en mi prenda.`
-                : `¡Hola LEM MODA! He completado mis 8 estampas (Tel: ${phone}) y vengo por mi prenda de regalo.`;
+            const waNumber = "593984909967"; 
+            let texto = "";
             
-            // Reemplaza con el número real de WhatsApp de LEM MODA
-            window.open(`https://wa.me/5939XXXXXXXX?text=${encodeURIComponent(texto)}`, '_blank');
+            if (hito === 4) {
+                texto = `✨ *¡TENGO UNA RECOMPENSA EN LEM MODA!* ✨\n\n` +
+                        `Hola, equipo de *LEM*. 👋\n\n` +
+                        `¡Qué buena noticia! Ya completé mis primeras *4 ESTAMPAS* 🎫 y quiero solicitar mi beneficio:\n` +
+                        `🎁 *50% DE DESCUENTO* en mi prenda.\n\n` +
+                        `📌 *Mi número registrado:* ${phone}\n\n` +
+                        `¿Me ayudan para hacerlo efectivo en mi compra? ¡Muchas gracias! 🥂`;
+            } else {
+                texto = `👑 *¡OBJETIVO LOGRADO EN LEM MODA!* 👑\n\n` +
+                        `¡Hola! 👋 ¡Lo logré!\n\n` +
+                        `He completado mis *8 ESTAMPAS* 🏆 y ya tengo mi tarjeta llena.\n` +
+                        `🛍️ ¡Vengo por mi *PRENDA DE REGALO*!\n\n` +
+                        `📌 *Mi número registrado:* ${phone}\n\n` +
+                        `Estoy muy emocionado/a por elegir mi regalo. ¡Gracias! ✨`;
+            }
+            
+            window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(texto)}`, '_blank');
         }
     </script>
 </body>
