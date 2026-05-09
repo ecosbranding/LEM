@@ -11,6 +11,8 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <!-- Librería para el efecto de confeti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         :root { 
@@ -63,18 +65,7 @@
 
         .slot.active { background: #fff; border: 2px solid var(--lem-verde); }
         .slot img { width: 60%; display: none; }
-      /* Grilla de Sellos Actualizada */
-.slot.active { 
-    background: #fff; /* Mantiene el fondo blanco para resaltar el logo */
-    border: 2px solid var(--lem-verde); /* Mantiene el contorno verde de éxito */
-}
-
-.slot.active img { 
-    display: block; 
-    filter: none; /* ELIMINA el tinte verde para mostrar el color original */
-    width: 65%; /* Ajuste leve para que luzca impecable */
-    
-        }
+        .slot.active img { display: block; filter: none; width: 65%; }
 
         .slot::before { content: attr(data-index); color: #444; font-weight: bold; position: absolute; font-size: 0.7rem; }
         .slot.active::before { display: none; }
@@ -89,7 +80,33 @@
             background: linear-gradient(135deg, #d4a373 0%, #b08968 100%); 
             color: #000; border: none; padding: 16px; border-radius: 15px; 
             width: 100%; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer;
         }
+
+        /* NUEVOS ESTILOS: Beneficios y Alertas */
+        .btn-beneficios {
+            background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold);
+            padding: 10px 20px; border-radius: 20px; margin-bottom: 15px;
+            cursor: pointer; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center;
+        }
+
+        .modal-content {
+            background: #0a0a0a; border: 1px solid var(--lem-gold); padding: 30px;
+            border-radius: 25px; width: 85%; max-width: 350px; text-align: center;
+        }
+
+        .premio-box {
+            background: rgba(56, 176, 0, 0.1); border: 1px dashed var(--lem-verde);
+            border-radius: 15px; padding: 15px; margin-top: 15px; display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         #success-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
@@ -103,12 +120,25 @@
     </style>
 </head>
 <body>
+    <!-- Modal de Beneficios -->
+    <div id="modalBeneficios" class="modal">
+        <div class="modal-content">
+            <h3 style="color: var(--lem-gold); letter-spacing: 2px;">BENEFICIOS LEM</h3>
+            <ul style="text-align: left; font-size: 0.85rem; line-height: 1.8; color: #ccc;">
+                <li>• <strong>4 ESTAMPAS:</strong> 50% de descuento en una prenda de tu compra actual.</li>
+                <li>• <strong>8 ESTAMPAS:</strong> 1 Prenda seleccionada de regalo.</li>
+            </ul>
+            <button class="btn-main" style="padding: 10px; margin-top: 20px;" onclick="toggleModal(false)">Cerrar</button>
+        </div>
+    </div>
+
     <div id="success-overlay">
         <div class="success-card">
             <div class="card-logo-box"><img src="1.png.png" style="width: 100px;"></div>
-            <h2 style="color: var(--lem-gold); font-weight: 300; letter-spacing: 2px;">¡Felicidades!</h2>
-            <p style="font-size: 0.85rem; color: #aaa; line-height: 1.5;">Has completado tus beneficios exclusivos en LEM MODA.</p>
-            <button class="btn-main" onclick="location.reload()">Entendido</button>
+            <h2 id="successTitle" style="color: var(--lem-gold); font-weight: 300; letter-spacing: 2px;">¡Felicidades!</h2>
+            <p id="successMsg" style="font-size: 0.85rem; color: #aaa; line-height: 1.5;">Has completado tus beneficios exclusivos en LEM MODA.</p>
+            <div id="waAction"></div>
+            <button class="btn-main" style="margin-top: 15px; background: transparent; color: #555; border: 1px solid #222;" onclick="document.getElementById('success-overlay').style.display='none'">Volver</button>
         </div>
     </div>
 
@@ -122,13 +152,19 @@
         </div>
 
         <div id="cardPanel" style="display:none">
+            <button class="btn-beneficios" onclick="toggleModal(true)">Ver Beneficios</button>
             <div class="card">
                 <div class="card-logo-box"><img src="1.png.png" class="card-logo"></div>
                 <div class="stamp-grid" id="stampGrid"></div>
                 <p id="counterLabel" style="color: var(--lem-gold); font-size: 0.75rem; letter-spacing: 1px;">Sincronizando...</p>
-                <div style="background:#fff; padding:8px; border-radius:12px; display:inline-block;"><canvas id="qr-canvas"></canvas></div>
+                
+                <div id="premioNotif" class="premio-box"></div>
+
+                <div style="background:#fff; padding:8px; border-radius:12px; display:inline-block; margin-top: 10px;">
+                    <canvas id="qr-canvas"></canvas>
+                </div>
             </div>
-            <button class="btn-main" style="margin-top:20px; background:transparent; color:#555; border:1px solid #222;" onclick="location.reload()">Cerrar</button>
+            <button class="btn-main" style="margin-top:20px; background:transparent; color:#555; border:1px solid #222;" onclick="location.reload()">Cerrar Sesión</button>
         </div>
         <p style="font-size: 10px; color: #444; margin-top: 20px;">ORCA Studios &copy; 2026</p>
     </div>
@@ -140,6 +176,10 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        function toggleModal(show) {
+            document.getElementById('modalBeneficios').style.display = show ? 'flex' : 'none';
+        }
 
         function accessSystem() {
             const phone = document.getElementById('userPhone').value.trim();
@@ -158,11 +198,13 @@
             document.getElementById('authPanel').style.display = 'none';
             document.getElementById('cardPanel').style.display = 'block';
             QRCode.toCanvas(document.getElementById('qr-canvas'), phone, { width: 120, margin: 1 });
+            
             db.ref('lem_users/' + phone + '/puntos').on('value', (snap) => {
                 const p = snap.val() || 0;
                 document.getElementById('counterLabel').innerText = `${p} DE 8 SELLOS`;
                 const grid = document.getElementById('stampGrid');
                 grid.innerHTML = '';
+                
                 for(let i=0; i<8; i++) {
                     const s = document.createElement('div');
                     s.className = 'slot' + (i < p ? ' active' : '');
@@ -170,8 +212,53 @@
                     s.innerHTML = '<img src="2.png.png">';
                     grid.appendChild(s);
                 }
-                if(p >= 8) document.getElementById('success-overlay').style.display = 'flex';
+
+                checkMilestones(p, phone);
             });
+        }
+
+        function checkMilestones(p, phone) {
+            const overlay = document.getElementById('success-overlay');
+            const title = document.getElementById('successTitle');
+            const msg = document.getElementById('successMsg');
+            const waAction = document.getElementById('waAction');
+            const notifBox = document.getElementById('premioNotif');
+
+            if (p === 4) {
+                lanzarConfeti();
+                overlay.style.display = 'flex';
+                title.innerText = "¡Hito Alcanzado!";
+                msg.innerText = "¡Felicidades! Por tus 4 estampas tienes el 50% de descuento en una prenda.";
+                waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white;" onclick="enviarWA('${phone}', 4)">Reclamar por WhatsApp</button>`;
+                
+                notifBox.style.display = 'block';
+                notifBox.innerHTML = `<small style="color:var(--lem-verde)">✓ Tienes un 50% OFF disponible</small>`;
+            } 
+            else if (p >= 8) {
+                lanzarConfeti();
+                overlay.style.display = 'flex';
+                title.innerText = "¡Máximo Nivel!";
+                msg.innerText = "¡Increíble! Has completado las 8 estampas. ¡Tu prenda de regalo te espera!";
+                waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white;" onclick="enviarWA('${phone}', 8)">Reclamar Regalo</button>`;
+                
+                notifBox.style.display = 'block';
+                notifBox.innerHTML = `<small style="color:var(--lem-verde)">✓ ¡Prenda de regalo lista!</small>`;
+            } else {
+                notifBox.style.display = 'none';
+            }
+        }
+
+        function lanzarConfeti() {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d4a373', '#784311', '#ffffff'] });
+        }
+
+        function enviarWA(phone, hito) {
+            const texto = hito === 4 
+                ? `¡Hola LEM MODA! He completado mis 4 estampas (Tel: ${phone}) y quiero mi 50% de descuento en mi prenda.`
+                : `¡Hola LEM MODA! He completado mis 8 estampas (Tel: ${phone}) y vengo por mi prenda de regalo.`;
+            
+            // Reemplaza con el número real de WhatsApp de LEM MODA
+            window.open(`https://wa.me/5939XXXXXXXX?text=${encodeURIComponent(texto)}`, '_blank');
         }
     </script>
 </body>
