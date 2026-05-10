@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +6,8 @@
 
 <title>LEM MODA | Elite</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -17,514 +17,496 @@
 <style>
 
 :root{
---gold:#e7c27d;
---gold2:#b8863b;
---bg:#050505;
---card:#090909;
---green:#7dff63;
---silver:#d5d5d5;
---yellow:#ffd900;
+    --lem-gold:#d4a14e;
+    --lem-gold-light:#f5d58c;
+    --lem-dark:#050505;
+    --lem-panel:#090909;
+    --lem-border:#7c571d;
+    --lem-green:#5cff46;
 }
 
+/* =========================
+BODY
+========================= */
+
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
 }
 
 body{
-background:
-radial-gradient(circle at top,#3a2108 0%,#000 45%),
-#000;
-font-family:'Montserrat',sans-serif;
-color:white;
-min-height:100vh;
-overflow-x:hidden;
-position:relative;
+    background:
+    radial-gradient(circle at top,#3a2104 0%,#000 55%);
+    color:white;
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
 }
 
-body::before{
-content:'';
-position:fixed;
-inset:0;
-background:
-linear-gradient(
-90deg,
-transparent,
-rgba(231,194,125,.05),
-transparent
-);
-animation:bgmove 8s linear infinite;
-pointer-events:none;
-}
-
-@keyframes bgmove{
-0%{transform:translateX(-100%);}
-100%{transform:translateX(100%);}
-}
+/* =========================
+LAYOUT
+========================= */
 
 .main-layout{
-max-width:1500px;
-margin:auto;
-display:grid;
-grid-template-columns:1fr 340px;
-gap:30px;
-padding:40px 24px;
-align-items:start;
+    width:100%;
+    max-width:1500px;
+    margin:auto;
+    padding:35px;
+    display:flex;
+    gap:30px;
+    align-items:flex-start;
+    justify-content:center;
 }
 
 .left-panel{
-background:rgba(0,0,0,.82);
-border:1px solid rgba(231,194,125,.25);
-border-radius:40px;
-padding:40px;
-position:relative;
-overflow:hidden;
-backdrop-filter:blur(20px);
-box-shadow:
-0 0 40px rgba(231,194,125,.08),
-0 20px 60px rgba(0,0,0,.8);
+    flex:1;
+    max-width:950px;
 }
 
-.left-panel::before{
-content:'';
-position:absolute;
-inset:0;
-background:
-radial-gradient(circle at top,
-rgba(231,194,125,.08),
-transparent 55%);
-pointer-events:none;
+.right-panel{
+    width:360px;
+    display:flex;
+    flex-direction:column;
+    gap:25px;
 }
 
-.side-panel{
-display:flex;
-flex-direction:column;
-gap:24px;
+/* =========================
+INFO CARDS
+========================= */
+
+.info-card{
+    background:rgba(0,0,0,.85);
+    border:1px solid rgba(212,161,78,.5);
+    border-radius:35px;
+    padding:30px;
+    display:flex;
+    gap:20px;
+    align-items:flex-start;
+    backdrop-filter:blur(10px);
+    transition:.35s;
 }
 
-.side-card{
-background:rgba(0,0,0,.88);
-border:1px solid rgba(231,194,125,.3);
-border-radius:30px;
-padding:28px;
-display:flex;
-gap:18px;
-align-items:flex-start;
-backdrop-filter:blur(10px);
-transition:.4s;
+.info-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 0 30px rgba(212,161,78,.15);
 }
 
-.side-card:hover{
-transform:translateY(-4px);
-box-shadow:0 0 25px rgba(231,194,125,.15);
+.info-icon{
+    font-size:2rem;
+    color:var(--lem-gold-light);
 }
 
-.side-icon{
-font-size:2rem;
-color:var(--gold);
+.info-title{
+    font-weight:700;
+    letter-spacing:2px;
+    color:var(--lem-gold-light);
+    margin-bottom:5px;
 }
 
-.side-title{
-font-size:1.4rem;
-font-weight:700;
-letter-spacing:2px;
-color:#f2d28f;
-margin-bottom:5px;
+.info-text{
+    color:#ddd;
+    line-height:1.4;
 }
 
-.side-desc{
-font-size:1rem;
-color:#ddd;
+/* =========================
+CARD
+========================= */
+
+.elite-card{
+    background:rgba(0,0,0,.9);
+    border:1px solid rgba(212,161,78,.4);
+    border-radius:40px;
+    padding:40px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
 }
 
-.center{
-text-align:center;
+.elite-card::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:
+    radial-gradient(circle at top,rgba(212,161,78,.12),transparent 50%);
+    pointer-events:none;
 }
 
-.logo-circle{
-width:200px;
-height:200px;
-border-radius:50%;
-background:white;
-margin:auto;
-display:flex;
-align-items:center;
-justify-content:center;
-border:5px solid var(--gold);
-box-shadow:
-0 0 40px rgba(231,194,125,.4),
-0 0 80px rgba(231,194,125,.2);
-animation:float 5s ease-in-out infinite;
+/* =========================
+BUTTONS
+========================= */
+
+.btn-beneficios{
+    background:linear-gradient(135deg,var(--lem-gold-light),#b98534);
+    border:none;
+    color:#000;
+    padding:18px 45px;
+    border-radius:22px;
+    font-weight:700;
+    letter-spacing:4px;
+    cursor:pointer;
+    margin-bottom:35px;
+    transition:.35s;
 }
 
-@keyframes float{
-0%,100%{transform:translateY(0);}
-50%{transform:translateY(-10px);}
+.btn-beneficios:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(212,161,78,.35);
 }
 
-.logo-circle img{
-width:80%;
+.btn-main{
+    background:linear-gradient(135deg,var(--lem-gold-light),#b98534);
+    border:none;
+    color:#000;
+    width:100%;
+    padding:18px;
+    border-radius:20px;
+    font-size:1rem;
+    font-weight:700;
+    letter-spacing:5px;
+    cursor:pointer;
+    transition:.35s;
 }
 
-.welcome{
-margin-top:30px;
-font-size:4rem;
-letter-spacing:14px;
-font-weight:300;
-color:#f2d28f;
+.btn-main:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 25px rgba(212,161,78,.35);
 }
 
-.elite{
-font-family:'Cinzel',serif;
-font-size:5rem;
-margin:25px 0;
-color:#f5d58d;
-text-shadow:0 0 20px rgba(231,194,125,.3);
+/* =========================
+LOGO
+========================= */
+
+.logo-big{
+    width:240px;
+    border-radius:30px;
+    border:2px solid var(--lem-gold);
+    box-shadow:0 0 35px rgba(212,161,78,.35);
 }
+
+.elite-title{
+    font-family:'Cinzel',serif;
+    color:var(--lem-gold-light);
+    font-size:4rem;
+    margin:25px 0 40px;
+}
+
+/* =========================
+LOGIN
+========================= */
 
 .auth-box{
-max-width:650px;
-margin:40px auto 0;
-display:flex;
-flex-direction:column;
-gap:22px;
+    max-width:600px;
+    margin:auto;
 }
 
-.input{
-height:75px;
-border-radius:24px;
-border:1px solid rgba(231,194,125,.25);
-background:#000;
-padding:0 28px;
-font-size:1.4rem;
-color:white;
-outline:none;
-transition:.3s;
+.input-box{
+    width:100%;
+    background:#000;
+    border:1px solid rgba(212,161,78,.4);
+    color:white;
+    padding:22px;
+    border-radius:20px;
+    margin-bottom:20px;
+    font-size:1.1rem;
+    outline:none;
 }
 
-.input:focus{
-border-color:var(--gold);
-box-shadow:0 0 20px rgba(231,194,125,.15);
+.input-box:focus{
+    border-color:var(--lem-gold-light);
+    box-shadow:0 0 20px rgba(212,161,78,.15);
 }
 
-.btn{
-height:78px;
-border:none;
-border-radius:24px;
-background:linear-gradient(135deg,#f1d28b,#b98536);
-font-size:1.4rem;
-font-weight:700;
-letter-spacing:6px;
-cursor:pointer;
-transition:.4s;
-}
-
-.btn:hover{
-transform:translateY(-3px);
-box-shadow:0 15px 40px rgba(231,194,125,.3);
-}
-
-.benefits-btn{
-margin:0 auto 35px;
-width:320px;
-max-width:100%;
-}
+/* =========================
+STAMP GRID
+========================= */
 
 .stamp-grid{
-margin-top:40px;
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:24px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:22px;
+    justify-items:center;
+    margin-top:20px;
 }
 
 .slot{
-aspect-ratio:1;
-border-radius:50%;
-border:2px solid rgba(231,194,125,.3);
-display:flex;
-align-items:center;
-justify-content:center;
-position:relative;
-background:#000;
-overflow:hidden;
-font-weight:700;
-font-size:2rem;
-color:#9f7b40;
-transition:.4s;
+    width:145px;
+    aspect-ratio:1/1;
+    border-radius:50%;
+    background:#000;
+    border:2px solid rgba(212,161,78,.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    transition:.35s;
+}
+
+.slot::before{
+    content:attr(data-index);
+    position:absolute;
+    color:#c89a4f;
+    font-size:3rem;
+    font-weight:700;
 }
 
 .slot.active{
-background:white;
-border:5px solid #74ff54;
-box-shadow:
-0 0 20px rgba(116,255,84,.7),
-0 0 40px rgba(116,255,84,.4);
+    background:#fff;
+    border:4px solid var(--lem-green);
+    box-shadow:0 0 25px rgba(92,255,70,.8);
+    animation:stampPop .4s ease;
 }
 
-.slot img{
-width:70%;
-display:none;
+.slot.active::before{
+    display:none;
 }
 
 .slot.active img{
-display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
 }
 
-.silver{
-border:4px solid silver;
+.silver-frame{
+    border:5px solid #cfd0d2;
 }
 
-.gold{
-border:4px solid gold;
+.gold-frame{
+    border:5px solid #ffe100;
 }
 
-.reward-text{
-font-size:1rem;
-font-weight:700;
-line-height:1.2;
-text-align:center;
-padding:8px;
+.premio-text{
+    font-size:.72rem;
+    line-height:1.1;
+    text-align:center;
+    font-weight:700;
+    letter-spacing:.5px;
+    padding:8px;
 }
 
-.counter{
-margin:35px 0 20px;
-font-size:3rem;
-letter-spacing:10px;
-color:#f1d28b;
+.premio-text.silver{
+    color:#fff;
 }
+
+.premio-text.gold{
+    color:#ffe100;
+}
+
+/* =========================
+COUNTER
+========================= */
+
+.counter-label{
+    margin-top:35px;
+    color:var(--lem-gold-light);
+    font-size:1.4rem;
+    letter-spacing:10px;
+}
+
+/* =========================
+QR
+========================= */
 
 .qr-box{
-margin-top:20px;
-display:inline-block;
-background:white;
-padding:18px;
-border-radius:24px;
+    margin-top:35px;
 }
 
-.logout{
-margin-top:40px;
-background:transparent;
-border:1px solid rgba(255,255,255,.15);
-color:#999;
+.qr-box canvas{
+    background:#fff;
+    padding:15px;
+    border-radius:25px;
+    width:170px !important;
+    height:170px !important;
 }
 
-.footer{
-margin-top:35px;
-text-align:center;
-color:#666;
-letter-spacing:5px;
-font-size:.9rem;
+/* =========================
+LOGOUT
+========================= */
+
+.logout-btn{
+    margin-top:35px;
+    background:transparent;
+    border:1px solid rgba(255,255,255,.15);
+    color:#999;
 }
 
-.banner{
-margin-bottom:25px;
-padding:18px;
-border-radius:20px;
-background:linear-gradient(135deg,rgba(231,194,125,.2),rgba(0,0,0,.5));
-border:1px solid rgba(231,194,125,.25);
-font-size:1rem;
-letter-spacing:2px;
-animation:pulse 3s infinite;
-}
-
-@keyframes pulse{
-0%,100%{opacity:1;}
-50%{opacity:.7;}
-}
+/* =========================
+MODAL
+========================= */
 
 .modal{
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.9);
-z-index:1000;
-align-items:center;
-justify-content:center;
-padding:20px;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.9);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
 }
 
 .modal-content{
-width:100%;
-max-width:500px;
-background:#080808;
-border:1px solid rgba(231,194,125,.3);
-border-radius:35px;
-padding:35px;
+    background:#0b0b0b;
+    border:1px solid rgba(212,161,78,.5);
+    border-radius:35px;
+    width:90%;
+    max-width:450px;
+    padding:40px;
 }
 
-.reward-popup{
-display:none;
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-z-index:2000;
-background:#070707;
-border:1px solid rgba(231,194,125,.35);
-padding:40px;
-border-radius:40px;
-width:90%;
-max-width:500px;
-text-align:center;
-box-shadow:0 0 60px rgba(231,194,125,.2);
+.modal-title{
+    color:var(--lem-gold-light);
+    letter-spacing:4px;
+    margin-bottom:25px;
+    text-align:center;
 }
 
-.reward-popup h2{
-font-family:'Cinzel',serif;
-font-size:3rem;
-color:#f1d28b;
-margin-bottom:20px;
+/* =========================
+SUCCESS
+========================= */
+
+.success-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.95);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:99999;
+    padding:20px;
 }
 
-.reward-popup p{
-font-size:1.2rem;
-line-height:1.6;
-color:#ddd;
+.success-card{
+    background:#050505;
+    border:1px solid rgba(212,161,78,.45);
+    border-radius:40px;
+    width:100%;
+    max-width:500px;
+    padding:40px;
+    text-align:center;
 }
 
-.wa-btn{
-margin-top:30px;
-background:#25d366;
-color:white;
+.success-title{
+    font-family:'Cinzel',serif;
+    color:var(--lem-gold-light);
+    font-size:2.5rem;
+    margin:20px 0;
 }
 
-.close-btn{
-margin-top:15px;
-background:#111;
-color:#aaa;
-border:1px solid #222;
+/* =========================
+FOOTER
+========================= */
+
+.footer{
+    text-align:center;
+    color:#666;
+    letter-spacing:5px;
+    margin:20px 0 40px;
 }
 
-@media(max-width:1100px){
+/* =========================
+ANIMATIONS
+========================= */
 
-.main-layout{
-grid-template-columns:1fr;
+@keyframes stampPop{
+    0%{
+        transform:scale(.7);
+    }
+    70%{
+        transform:scale(1.08);
+    }
+    100%{
+        transform:scale(1);
+    }
 }
 
-.side-panel{
-order:-1;
-}
+/* =========================
+RESPONSIVE
+========================= */
 
-.side-card{
-padding:22px;
-}
+@media(max-width:1200px){
 
+    .main-layout{
+        flex-direction:column-reverse;
+        align-items:center;
+    }
+
+    .right-panel{
+        width:100%;
+        max-width:950px;
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+    }
 }
 
 @media(max-width:768px){
 
-.main-layout{
-padding:18px;
-gap:20px;
-}
+    .main-layout{
+        padding:18px;
+    }
 
-.left-panel{
-padding:24px 18px;
-border-radius:30px;
-}
+    .right-panel{
+        display:flex;
+        width:100%;
+    }
 
-.logo-circle{
-width:150px;
-height:150px;
-}
+    .elite-card{
+        padding:25px 18px;
+        border-radius:30px;
+    }
 
-.welcome{
-font-size:2.3rem;
-letter-spacing:8px;
-}
+    .logo-big{
+        width:170px;
+    }
 
-.elite{
-font-size:3.5rem;
-}
+    .elite-title{
+        font-size:3rem;
+    }
 
-.auth-box{
-gap:16px;
-}
+    .stamp-grid{
+        gap:12px;
+    }
 
-.input{
-height:64px;
-font-size:1.1rem;
-border-radius:18px;
-}
+    .slot{
+        width:78px;
+    }
 
-.btn{
-height:65px;
-font-size:1.1rem;
-letter-spacing:4px;
-border-radius:18px;
-}
+    .slot::before{
+        font-size:2rem;
+    }
 
-.stamp-grid{
-gap:14px;
-}
+    .premio-text{
+        font-size:.48rem;
+        line-height:1;
+    }
 
-.slot{
-font-size:1.2rem;
-}
+    .counter-label{
+        font-size:1rem;
+        letter-spacing:6px;
+    }
 
-.reward-text{
-font-size:.70rem;
-padding:4px;
-}
+    .qr-box canvas{
+        width:135px !important;
+        height:135px !important;
+    }
 
-.counter{
-font-size:1.7rem;
-letter-spacing:5px;
-}
+    .btn-beneficios{
+        width:100%;
+        padding:16px;
+        letter-spacing:3px;
+    }
 
-.side-title{
-font-size:1.1rem;
-}
+    .input-box{
+        padding:18px;
+    }
 
-.side-desc{
-font-size:.95rem;
-}
-
-.reward-popup h2{
-font-size:2rem;
-}
-
-.reward-popup p{
-font-size:1rem;
-}
-
-}
-
-@media(max-width:480px){
-
-.logo-circle{
-width:125px;
-height:125px;
-}
-
-.welcome{
-font-size:1.8rem;
-letter-spacing:5px;
-}
-
-.elite{
-font-size:2.8rem;
-}
-
-.stamp-grid{
-gap:10px;
-}
-
-.slot{
-font-size:1rem;
-}
-
-.reward-text{
-font-size:.58rem;
-line-height:1.1;
-}
-
-.counter{
-font-size:1.3rem;
-letter-spacing:3px;
-}
-
+    .info-card{
+        padding:25px;
+    }
 }
 
 </style>
@@ -532,61 +514,198 @@ letter-spacing:3px;
 
 <body>
 
+<!-- MODAL -->
+
+<div id="modalBeneficios" class="modal">
+
+    <div class="modal-content">
+
+        <h2 class="modal-title">
+            BENEFICIOS LEM
+        </h2>
+
+        <div style="margin-bottom:30px;">
+            <h3 style="color:#fff;">4 ESTAMPAS</h3>
+            <p style="color:#ccc; line-height:1.5;">
+                50% de descuento en una prenda de tu compra actual.
+            </p>
+        </div>
+
+        <div>
+            <h3 style="color:#ffe100;">8 ESTAMPAS</h3>
+            <p style="color:#ccc; line-height:1.5;">
+                1 prenda seleccionada de regalo.
+            </p>
+        </div>
+
+        <button
+        class="btn-main"
+        style="margin-top:30px;"
+        onclick="toggleModal(false)">
+        CERRAR
+        </button>
+
+    </div>
+
+</div>
+
+<!-- SUCCESS -->
+
+<div class="success-overlay" id="success-overlay">
+
+    <div class="success-card">
+
+        <img src="1.png.png" width="140">
+
+        <div class="success-title" id="successTitle">
+            ¡FELICIDADES!
+        </div>
+
+        <p id="successMsg"
+        style="color:#ddd; line-height:1.7;">
+        </p>
+
+        <div id="waAction"
+        style="margin-top:25px;">
+        </div>
+
+        <button
+        class="btn-main logout-btn"
+        onclick="document.getElementById('success-overlay').style.display='none'">
+        VOLVER
+        </button>
+
+    </div>
+
+</div>
+
+<!-- MAIN -->
+
 <div class="main-layout">
 
-<div class="left-panel">
+    <!-- LEFT -->
 
-<div id="seasonBanner" class="banner"></div>
+    <div class="left-panel">
 
-<div class="center">
+        <!-- LOGIN -->
 
-<div id="authPanel">
+        <div id="authPanel" class="elite-card">
 
-<div class="logo-circle">
-<img src="1.png.png">
-</div>
+            <div class="auth-box">
 
-<h1 class="welcome">BIENVENIDO</h1>
+                <img src="1.png.png" class="logo-big">
 
-<div class="auth-box">
+                <div class="elite-title">
+                    BIENVENIDO
+                </div>
 
-<input type="tel" id="userPhone" class="input" placeholder="WhatsApp">
+                <input
+                type="tel"
+                id="userPhone"
+                class="input-box"
+                placeholder="WhatsApp">
 
-<input type="password" id="userPin" class="input" placeholder="PIN de 4 dígitos">
+                <input
+                type="password"
+                id="userPin"
+                class="input-box"
+                maxlength="4"
+                placeholder="PIN de 4 dígitos">
 
-<button class="btn" onclick="accessSystem()">INGRESAR</button>
+                <button
+                class="btn-main"
+                onclick="accessSystem()">
+                INGRESAR
+                </button>
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-<div id="cardPanel" style="display:none;">
+        <!-- CARD -->
 
-<button class="btn benefits-btn" onclick="toggleModal(true)">
-VER BENEFICIOS
-</button>
+        <div id="cardPanel"
+        class="elite-card"
+        style="display:none;">
 
-<div style="margin-top:20px;">
-<img src="1.png.png" style="width:230px;border-radius:30px;border:2px solid var(--gold);">
-</div>
+            <button
+            class="btn-beneficios"
+            onclick="toggleModal(true)">
+            VER BENEFICIOS
+            </button>
 
-<div class="elite">Elite</div>
+            <div>
 
-<div class="stamp-grid" id="stampGrid"></div>
+                <img src="1.png.png" class="logo-big">
 
-<div class="counter" id="counterLabel">
-0 DE 8 SELLOS
-</div>
+                <div class="elite-title">
+                    Elite
+                </div>
 
-<div class="qr-box">
-<canvas id="qr-canvas"></canvas>
-</div>
+                <div class="stamp-grid" id="stampGrid">
+                </div>
 
-<button class="btn logout" onclick="location.reload()">
-CERRAR SESIÓN
-</button>
+                <div class="counter-label" id="counterLabel">
+                    0 DE 8 SELLOS
+                </div>
 
-</div>
+                <div class="qr-box">
+                    <canvas id="qr-canvas"></canvas>
+                </div>
+
+                <button
+                class="btn-main logout-btn"
+                onclick="location.reload()">
+                CERRAR SESIÓN
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+
+    <div class="right-panel">
+
+        <div class="info-card">
+            <div class="info-icon">📱</div>
+            <div>
+                <div class="info-title">
+                    TU PROGRESO
+                </div>
+                <div class="info-text">
+                    Sincronizado en tiempo real.
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon">🛡️</div>
+            <div>
+                <div class="info-title">
+                    BENEFICIOS EXCLUSIVOS
+                </div>
+                <div class="info-text">
+                    Recompensas premium LEM.
+                </div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon">💎</div>
+            <div>
+                <div class="info-title">
+                    EXPERIENCIA ELITE
+                </div>
+                <div class="info-text">
+                    Diseñada para clientes exclusivos.
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 </div>
 
@@ -594,322 +713,364 @@ CERRAR SESIÓN
 ORCA STUDIOS © 2026
 </div>
 
-</div>
-
-<div class="side-panel">
-
-<div class="side-card">
-<div class="side-icon">📱</div>
-<div>
-<div class="side-title">TU PROGRESO</div>
-<div class="side-desc">Sincronizado en tiempo real.</div>
-</div>
-</div>
-
-<div class="side-card">
-<div class="side-icon">🛡️</div>
-<div>
-<div class="side-title">BENEFICIOS EXCLUSIVOS</div>
-<div class="side-desc">Recompensas premium LEM.</div>
-</div>
-</div>
-
-<div class="side-card">
-<div class="side-icon">💎</div>
-<div>
-<div class="side-title">EXPERIENCIA ELITE</div>
-<div class="side-desc">Diseñada para clientes exclusivos.</div>
-</div>
-</div>
-
-</div>
-
-</div>
-
-<div class="modal" id="benefitsModal">
-<div class="modal-content">
-
-<h2 style="margin-bottom:25px;color:#f1d28b;font-size:2rem;">
-BENEFICIOS LEM
-</h2>
-
-<div style="margin-bottom:25px;">
-<h3 style="color:silver;">4 ESTAMPAS</h3>
-<p style="margin-top:10px;color:#ddd;">
-50% de descuento en una prenda.
-</p>
-</div>
-
-<div>
-<h3 style="color:gold;">8 ESTAMPAS</h3>
-<p style="margin-top:10px;color:#ddd;">
-Prenda seleccionada de regalo.
-</p>
-</div>
-
-<button class="btn close-btn" onclick="toggleModal(false)">
-CERRAR
-</button>
-
-</div>
-</div>
-
-<div class="reward-popup" id="rewardPopup">
-<h2 id="rewardTitle"></h2>
-<p id="rewardText"></p>
-
-<button id="waBtn" class="btn wa-btn"></button>
-
-<button class="btn close-btn" onclick="closeReward()">
-VOLVER
-</button>
-</div>
-
 <script>
 
+/* =========================
+FIREBASE
+========================= */
+
 const firebaseConfig = {
-databaseURL:"https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
-appId:"1:901791881107:web:e1ff85e3fc768064eeba66"
+    databaseURL:"https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
+    appId:"1:901791881107:web:e1ff85e3fc768064eeba66"
 };
 
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
 
+/* =========================
+MODAL
+========================= */
+
 function toggleModal(show){
-document.getElementById('benefitsModal').style.display = show ? 'flex':'none';
+
+    document.getElementById('modalBeneficios').style.display =
+    show ? 'flex' : 'none';
 }
+
+/* =========================
+LOGIN
+========================= */
 
 function accessSystem(){
 
-const phone = document.getElementById('userPhone').value.trim();
-const pin = document.getElementById('userPin').value.trim();
+    const phone =
+    document.getElementById('userPhone').value.trim();
 
-if(!phone || !pin){
-alert('Completa los datos');
-return;
+    const pin =
+    document.getElementById('userPin').value.trim();
+
+    if(!phone || !pin){
+        return;
+    }
+
+    const ref = db.ref('lem_users/' + phone);
+
+    ref.once('value',(snap)=>{
+
+        const data = snap.val();
+
+        if(!data){
+
+            ref.set({
+                pin,
+                puntos:0
+            }).then(()=>{
+                login(phone);
+            });
+
+        }else if(data.pin === pin){
+
+            login(phone);
+
+        }else{
+
+            alert('PIN incorrecto');
+        }
+
+    });
+
 }
 
-const ref = db.ref('lem_users/' + phone);
-
-ref.once('value',(snap)=>{
-
-const data = snap.val();
-
-if(!data){
-
-ref.set({
-pin,
-puntos:0
-}).then(()=>{
-login(phone);
-});
-
-}else if(data.pin === pin){
-
-login(phone);
-
-}else{
-alert('PIN incorrecto');
-}
-
-});
-
-}
+/* =========================
+LOGIN PANEL
+========================= */
 
 function login(phone){
 
-document.getElementById('authPanel').style.display='none';
-document.getElementById('cardPanel').style.display='block';
+    document.getElementById('authPanel').style.display='none';
 
-QRCode.toCanvas(
-document.getElementById('qr-canvas'),
-phone,
-{
-width:220,
-margin:1
+    document.getElementById('cardPanel').style.display='block';
+
+    QRCode.toCanvas(
+        document.getElementById('qr-canvas'),
+        phone,
+        {
+            width:170,
+            margin:1
+        }
+    );
+
+    db.ref('lem_users/' + phone + '/puntos')
+    .on('value',(snap)=>{
+
+        const p = snap.val() || 0;
+
+        document.getElementById('counterLabel')
+        .innerText = `${p} DE 8 SELLOS`;
+
+        renderStamps(p);
+
+        checkMilestones(p,phone);
+
+    });
+
 }
-);
 
-db.ref('lem_users/' + phone + '/puntos')
-.on('value',(snap)=>{
-
-const puntos = snap.val() || 0;
-
-renderStamps(puntos);
-
-document.getElementById('counterLabel')
-.innerText = `${puntos} DE 8 SELLOS`;
-
-checkRewards(puntos,phone);
-
-});
-
-}
+/* =========================
+STAMP RENDER
+========================= */
 
 function renderStamps(p){
 
-const grid = document.getElementById('stampGrid');
+    const grid =
+    document.getElementById('stampGrid');
 
-grid.innerHTML='';
+    grid.innerHTML='';
 
-for(let i=1;i<=8;i++){
+    for(let i=0;i<8;i++){
 
-const div = document.createElement('div');
+        const slot =
+        document.createElement('div');
 
-let cls = 'slot';
+        const index = i+1;
 
-if(i<=p) cls += ' active';
+        const active = i < p;
 
-if(i===4) cls += ' silver';
+        slot.className =
+        'slot' + (active ? ' active' : '');
 
-if(i===8) cls += ' gold';
+        slot.setAttribute('data-index',index);
 
-div.className = cls;
+        if(index === 4){
+            slot.classList.add('silver-frame');
+        }
 
-if(i<=p){
+        if(index === 8){
+            slot.classList.add('gold-frame');
+        }
 
-div.innerHTML = `<img src="2.png.png">`;
+        if(active){
 
-}else if(i===4){
+            slot.innerHTML =
+            `<img src="2.png.png">`;
 
-div.innerHTML = `<div class="reward-text">50% OFF<br>PRENDA</div>`;
+        }else{
 
-}else if(i===8){
+            if(index === 4){
 
-div.innerHTML = `<div class="reward-text">PRENDA<br>REGALO</div>`;
+                slot.innerHTML =
+                `<div class="premio-text silver">
+                50% OFF<br>PRENDA
+                </div>`;
 
-}else{
+            }else if(index === 8){
 
-div.innerText = i;
+                slot.innerHTML =
+                `<div class="premio-text gold">
+                PRENDA<br>REGALO
+                </div>`;
 
-}
+            }
 
-grid.appendChild(div);
+        }
 
-}
+        grid.appendChild(slot);
 
-}
-
-function checkRewards(p,phone){
-
-if(p===4){
-
-showReward(
-'¡RECOMPENSA!',
-'Tienes 50% OFF en una prenda.',
-phone,
-4
-);
-
-confetti({
-particleCount:180,
-spread:90,
-origin:{y:.6},
-colors:['#e7c27d','#ffffff','#74ff54']
-});
+    }
 
 }
 
-if(p>=8){
+/* =========================
+MILESTONES
+========================= */
 
-showReward(
-'¡NIVEL COMPLETADO!',
-'Tu prenda de regalo está lista.',
-phone,
-8
-);
+function checkMilestones(p,phone){
 
-confetti({
-particleCount:260,
-spread:120,
-origin:{y:.5},
-colors:['#ffd700','#ffffff','#e7c27d']
-});
+    const overlay =
+    document.getElementById('success-overlay');
 
-}
+    const title =
+    document.getElementById('successTitle');
 
-}
+    const msg =
+    document.getElementById('successMsg');
 
-function showReward(title,text,phone,level){
+    const wa =
+    document.getElementById('waAction');
 
-document.getElementById('rewardPopup').style.display='block';
+    if(p === 4){
 
-document.getElementById('rewardTitle').innerText = title;
+        lanzarConfeti();
 
-document.getElementById('rewardText').innerText = text;
+        overlay.style.display='flex';
 
-const btn = document.getElementById('waBtn');
+        title.innerText =
+        '¡RECOMPENSA ALCANZADA!';
 
-btn.innerText = 'RECLAMAR POR WHATSAPP';
+        msg.innerHTML =
+        `¡Felicidades!<br>
+        Tienes un 50% OFF disponible.`;
 
-btn.onclick = ()=>{
+        wa.innerHTML =
+        `
+        <button
+        class="btn-main"
+        style="background:#25d366;color:white;"
+        onclick="enviarWA('${phone}',4)">
+        RECLAMAR POR WHATSAPP
+        </button>
+        `;
 
-let message = '';
+    }
 
-if(level===4){
+    if(p >= 8){
 
-message = `Hola LEM MODA ✨ Ya completé mis 4 estampas y quiero reclamar mi 50% OFF. Mi número es ${phone}`;
+        lanzarConfeti();
 
-}else{
+        overlay.style.display='flex';
 
-message = `Hola LEM MODA 👑 Ya completé mis 8 estampas y quiero reclamar mi prenda de regalo. Mi número es ${phone}`;
+        title.innerText =
+        '¡NIVEL COMPLETADO!';
 
-}
+        msg.innerHTML =
+        `Has desbloqueado<br>
+        tu PRENDA DE REGALO.`;
 
-window.open(
-`https://wa.me/593984909967?text=${encodeURIComponent(message)}`,
-'_blank'
-);
+        wa.innerHTML =
+        `
+        <button
+        class="btn-main"
+        style="background:#25d366;color:white;"
+        onclick="enviarWA('${phone}',8)">
+        RECLAMAR REGALO
+        </button>
+        `;
 
-};
-
-}
-
-function closeReward(){
-document.getElementById('rewardPopup').style.display='none';
-}
-
-function detectSeason(){
-
-const now = new Date();
-
-const day = now.getDate();
-const month = now.getMonth()+1;
-
-const banner = document.getElementById('seasonBanner');
-
-let text = '✨ Bienvenido a la experiencia Elite de LEM MODA';
-
-if(month===12){
-text='🎄 Colección Navideña Elite disponible ahora';
-document.documentElement.style.setProperty('--gold','#ffdf8a');
-}
-
-else if(month===2 && day<=14){
-text='❤️ Celebra San Valentín con estilo Elite';
-}
-
-else if(month===10){
-text='🎃 Octubre Elite Nights en LEM MODA';
-}
-
-else if(month===11){
-text='🖤 Black November exclusivo para miembros';
-}
-
-else if(month===1){
-text='🎆 Nuevo año, nuevas recompensas Elite';
-}
-
-banner.innerText = text;
+    }
 
 }
 
-detectSeason();
+/* =========================
+CONFETTI
+========================= */
+
+function lanzarConfeti(){
+
+    confetti({
+        particleCount:180,
+        spread:90,
+        origin:{y:.6},
+        colors:[
+            '#d4a14e',
+            '#ffffff',
+            '#ffe100'
+        ]
+    });
+
+}
+
+/* =========================
+WHATSAPP
+========================= */
+
+function enviarWA(phone,hito){
+
+    const waNumber =
+    "593984909967";
+
+    let texto = "";
+
+    if(hito === 4){
+
+        texto =
+        `Hola LEM ✨ Ya completé 4 estampas y quiero reclamar mi 50% OFF.\n\nMi número: ${phone}`;
+
+    }else{
+
+        texto =
+        `Hola LEM 👑 Ya completé las 8 estampas y quiero reclamar mi prenda de regalo.\n\nMi número: ${phone}`;
+
+    }
+
+    window.open(
+        `https://wa.me/${waNumber}?text=${encodeURIComponent(texto)}`,
+        '_blank'
+    );
+
+}
+
+/* =========================
+EVENTOS ECUADOR
+========================= */
+
+function activarTemaFestivo(){
+
+    const hoy = new Date();
+
+    const d = hoy.getDate();
+
+    const m = hoy.getMonth()+1;
+
+    let mensaje = "";
+
+    let color = "#d4a14e";
+
+    if(m === 12){
+
+        mensaje = "🎄 Navidad Elite";
+
+        color = "#38b000";
+
+    }else if(m === 2){
+
+        mensaje = "❤️ Mes del Amor";
+
+        color = "#ff4d6d";
+
+    }else if(m === 10){
+
+        mensaje = "🎃 Halloween Elite";
+
+        color = "#ff8800";
+
+    }else if(m === 8){
+
+        mensaje = "🇪🇨 Ecuador Premium";
+
+        color = "#f4d35e";
+    }
+
+    if(mensaje){
+
+        const banner =
+        document.createElement('div');
+
+        banner.innerHTML = mensaje;
+
+        banner.style.cssText = `
+        position:fixed;
+        top:15px;
+        left:50%;
+        transform:translateX(-50%);
+        z-index:999999;
+        background:${color};
+        color:#000;
+        padding:12px 25px;
+        border-radius:40px;
+        font-weight:700;
+        letter-spacing:2px;
+        box-shadow:0 0 30px ${color};
+        `;
+
+        document.body.appendChild(banner);
+    }
+
+}
+
+activarTemaFestivo();
 
 </script>
 
 </body>
 </html>
-```
