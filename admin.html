@@ -98,18 +98,18 @@
 
         let html5QrCode;
 
-        // --- NUEVA FUNCIÓN DE REGISTRO POR FECHA ---
-        function registrarAccion(phone, accion, puntosFinales) {
+        // FUNCIÓN DE REPORTE DIARIO (Cierre de día)
+        function actualizarRegistroDelDia(phone, puntosFinales) {
             const ahora = new Date();
-            const fechaKey = ahora.toISOString().split('T')[0]; // Formato: YYYY-MM-DD
+            const carpetaFecha = ahora.getFullYear() + "-" + 
+                                String(ahora.getMonth() + 1).padStart(2, '0') + "-" + 
+                                String(ahora.getDate()).padStart(2, '0');
             
-            const logRef = db.ref('historial_puntos/' + fechaKey).push();
-            logRef.set({
+            // Usamos .set() con el teléfono como ID para que el cliente sea único por fecha
+            db.ref('reporte_diario/' + carpetaFecha + '/' + phone).set({
                 whatsapp: phone,
-                accion: accion,
-                puntos_posteriores: puntosFinales,
-                hora: ahora.toLocaleTimeString(),
-                timestamp: firebase.database.ServerValue.TIMESTAMP
+                puntos_al_cierre: puntosFinales,
+                hora_ultima_accion: ahora.toLocaleTimeString()
             });
         }
 
@@ -163,14 +163,12 @@
         function adjustPoints(change) {
             const phone = document.getElementById('clientPhone').innerText.replace("WhatsApp: ", "");
             const ref = db.ref('lem_users/' + phone + '/puntos');
-            
             ref.transaction((c) => {
                 let newVal = (c || 0) + change;
                 return (newVal < 0) ? 0 : (newVal > 8 ? 8 : newVal);
             }, (error, committed, snapshot) => {
                 if (committed) {
-                    const tipo = change > 0 ? "Sello Agregado" : "Sello Quitado";
-                    registrarAccion(phone, tipo, snapshot.val());
+                    actualizarRegistroDelDia(phone, snapshot.val());
                 }
             });
         }
@@ -179,7 +177,7 @@
             if(confirm("¿Confirmas que ya entregaste el premio y quieres reiniciar los puntos a 0?")) {
                 const phone = document.getElementById('clientPhone').innerText.replace("WhatsApp: ", "");
                 db.ref('lem_users/' + phone + '/puntos').set(0);
-                registrarAccion(phone, "Premio Entregado (Reset)", 0);
+                actualizarRegistroDelDia(phone, 0);
             }
         }
 
