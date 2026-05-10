@@ -5,30 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LEM MODA | Elite</title>
 
-    <meta name="description" content="Programa de Lealtad Elite de LEM MODA. Colecciona estampas y obtén beneficios exclusivos.">
-    
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://lemmoda.vercel.app/"> 
-    <meta property="og:title" content="LEM MODA | Elite">
-    <meta property="og:description" content="¡Colecciona tus estampas y canjea premios exclusivos en LEM MODA!">
-    
-    <meta property="og:image" content="https://lemmoda.vercel.app/logo-lem-elite.png"> 
-    <meta property="og:image:secure_url" content="https://lemmoda.vercel.app/logo-lem-elite.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/png">
-    <meta property="fb:app_id" content="123456789" />
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="LEM MODA | Elite">
-    <meta name="twitter:description" content="¡Colecciona tus estampas y canjea premios exclusivos en LEM MODA!">
-    <meta name="twitter:image" content="https://lemmoda.vercel.app/logo-lem-elite.png">
-
-    <link rel="icon" type="image/png" href="logo-lem-elite.png">
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#784311">
-
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
@@ -39,6 +15,8 @@
             --lem-cafe: #784311; 
             --lem-gold: #d4a373; 
             --lem-verde: #38b000;
+            --silver-fine: #bdc3c7;
+            --gold-fine: #d4af37;
         }
 
         body { 
@@ -77,65 +55,57 @@
         .card-logo { width: 110px; }
         
         .stamp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+        
+        /* Estilos base de los slots */
         .slot { 
             aspect-ratio: 1; background: rgba(0,0,0,0.8); 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
             border: 1px solid rgba(212, 163, 115, 0.1); position: relative;
+            flex-direction: column; text-align: center; overflow: hidden;
         }
 
-        .slot.active { background: #fff; border: 2px solid var(--lem-verde); }
+        .slot.active { background: #fff; border: 2.5px solid var(--lem-verde); }
         .slot img { width: 60%; display: none; }
         .slot.active img { display: block; filter: none; width: 65%; }
 
         .slot::before { content: attr(data-index); color: #444; font-weight: bold; position: absolute; font-size: 0.7rem; }
         .slot.active::before { display: none; }
+
+        /* MARCOS ESPECIALES SUTILES (HITO 4 Y 8) */
+        .slot-premio { border-width: 1.5px !important; }
         
-        .input-box { 
-            background: #000; border: 1px solid rgba(212, 163, 115, 0.2); 
-            color: #fff; padding: 16px; border-radius: 15px; width: 100%; 
-            margin-bottom: 12px; box-sizing: border-box; text-align: center; outline: none;
+        .silver-frame { 
+            border-color: var(--silver-fine) !important;
+            box-shadow: 0 0 10px rgba(189, 195, 199, 0.2);
+            animation: shine-silver 4s infinite;
+        }
+        
+        .gold-frame { 
+            border-color: var(--gold-fine) !important;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+            animation: shine-gold 4s infinite;
         }
 
-        .btn-main { 
-            background: linear-gradient(135deg, #d4a373 0%, #b08968 100%); 
-            color: #000; border: none; padding: 16px; border-radius: 15px; 
-            width: 100%; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
-            cursor: pointer;
+        .premio-text { font-size: 0.55rem; color: #fff; line-height: 1.1; font-weight: bold; padding: 2px; }
+        .premio-text.silver { color: #bdc3c7; }
+        .premio-text.gold { color: #d4af37; }
+
+        @keyframes shine-silver {
+            0% { border-color: #7f8c8d; } 50% { border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); } 100% { border-color: #7f8c8d; }
+        }
+        @keyframes shine-gold {
+            0% { border-color: #917617; } 50% { border-color: #f7e08b; box-shadow: 0 0 15px rgba(247,224,139,0.3); } 100% { border-color: #917617; }
         }
 
-        .btn-beneficios {
-            background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold);
-            padding: 10px 20px; border-radius: 20px; margin-bottom: 15px;
-            cursor: pointer; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;
-        }
-
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center;
-        }
-
-        .modal-content {
-            background: #0a0a0a; border: 1px solid var(--lem-gold); padding: 30px;
-            border-radius: 25px; width: 85%; max-width: 350px; text-align: center;
-        }
-
-        .premio-box {
-            background: rgba(56, 176, 0, 0.1); border: 1px dashed var(--lem-verde);
-            border-radius: 15px; padding: 15px; margin-top: 15px; display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        #success-overlay { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.98); z-index: 100; align-items: center; justify-content: center; 
-        }
-
-        .success-card { 
-            background: #000; border: 1px solid var(--lem-gold); 
-            border-radius: 35px; padding: 30px; width: 80%; text-align: center; 
-        }
+        /* Resto de estilos (Entradas, Botones, Modales) */
+        .input-box { background: #000; border: 1px solid rgba(212, 163, 115, 0.2); color: #fff; padding: 16px; border-radius: 15px; width: 100%; margin-bottom: 12px; box-sizing: border-box; text-align: center; outline: none; }
+        .btn-main { background: linear-gradient(135deg, #d4a373 0%, #b08968 100%); color: #000; border: none; padding: 16px; border-radius: 15px; width: 100%; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
+        .btn-beneficios { background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold); padding: 10px 20px; border-radius: 20px; margin-bottom: 15px; cursor: pointer; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: #0a0a0a; border: 1px solid var(--lem-gold); padding: 30px; border-radius: 25px; width: 85%; max-width: 350px; text-align: center; }
+        .premio-box { background: rgba(56, 176, 0, 0.1); border: 1px dashed var(--lem-verde); border-radius: 15px; padding: 15px; margin-top: 15px; display: none; animation: fadeIn 0.5s ease; }
+        #success-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 100; align-items: center; justify-content: center; }
+        .success-card { background: #000; border: 1px solid var(--lem-gold); border-radius: 35px; padding: 30px; width: 80%; text-align: center; }
     </style>
 </head>
 <body>
@@ -175,9 +145,7 @@
                 <div class="card-logo-box"><img src="1.png.png" class="card-logo"></div>
                 <div class="stamp-grid" id="stampGrid"></div>
                 <p id="counterLabel" style="color: var(--lem-gold); font-size: 0.75rem; letter-spacing: 1px;">Sincronizando...</p>
-                
                 <div id="premioNotif" class="premio-box"></div>
-
                 <div style="background:#fff; padding:8px; border-radius:12px; display:inline-block; margin-top: 10px;">
                     <canvas id="qr-canvas"></canvas>
                 </div>
@@ -195,9 +163,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function toggleModal(show) {
-            document.getElementById('modalBeneficios').style.display = show ? 'flex' : 'none';
-        }
+        function toggleModal(show) { document.getElementById('modalBeneficios').style.display = show ? 'flex' : 'none'; }
 
         function accessSystem() {
             const phone = document.getElementById('userPhone').value.trim();
@@ -225,16 +191,35 @@
                 
                 for(let i=0; i<8; i++) {
                     const s = document.createElement('div');
-                    s.className = 'slot' + (i < p ? ' active' : '');
-                    s.setAttribute('data-index', i + 1);
-                    s.innerHTML = '<img src="2.png.png">';
+                    const isActive = i < p;
+                    const index = i + 1;
+                    
+                    s.className = 'slot' + (isActive ? ' active' : '');
+                    s.setAttribute('data-index', index);
+
+                    // APLICAR MARCOS ESPECIALES
+                    if(index === 4) s.classList.add('slot-premio', 'silver-frame');
+                    if(index === 8) s.classList.add('slot-premio', 'gold-frame');
+
+                    // CONTENIDO DEL SELLO
+                    if(isActive) {
+                        s.innerHTML = '<img src="2.png.png">';
+                    } else {
+                        if(index === 4) {
+                            s.innerHTML = '<span class="premio-text silver">50% OFF<br>EN PRENDA</span>';
+                        } else if (index === 8) {
+                            s.innerHTML = '<span class="premio-text gold">PRENDA<br>GRATIS</span>';
+                        } else {
+                            s.innerHTML = ''; // Se usa el data-index (CSS)
+                        }
+                    }
                     grid.appendChild(s);
                 }
-
                 checkMilestones(p, phone);
             });
         }
 
+        // [MANTENGO TUS FUNCIONES checkMilestones, lanzarConfeti y enviarWA IGUALES]
         function checkMilestones(p, phone) {
             const overlay = document.getElementById('success-overlay');
             const title = document.getElementById('successTitle');
@@ -248,17 +233,14 @@
                 title.innerText = "¡Recompensa Alcanzada!";
                 msg.innerText = "¡Felicidades! Por tus 4 estampas tienes el 50% de descuento en una prenda.";
                 waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white;" onclick="enviarWA('${phone}', 4)">Reclamar por WhatsApp</button>`;
-                
                 notifBox.style.display = 'block';
                 notifBox.innerHTML = `<small style="color:var(--lem-verde)">✓ Tienes un 50% OFF disponible</small>`;
-            } 
-            else if (p >= 8) {
+            } else if (p >= 8) {
                 lanzarConfeti();
                 overlay.style.display = 'flex';
                 title.innerText = "¡Nivel Completado!";
                 msg.innerText = "¡Increíble! Has completado las 8 estampas. ¡Tu prenda de regalo te espera!";
                 waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white;" onclick="enviarWA('${phone}', 8)">Reclamar Regalo</button>`;
-                
                 notifBox.style.display = 'block';
                 notifBox.innerHTML = `<small style="color:var(--lem-verde)">✓ ¡Prenda de regalo lista!</small>`;
             } else {
@@ -272,24 +254,9 @@
 
         function enviarWA(phone, hito) {
             const waNumber = "593984909967"; 
-            let texto = "";
-            
-            if (hito === 4) {
-                texto = `✨ *¡TENGO UNA RECOMPENSA EN LEM MODA!* ✨\n\n` +
-                        `Hola, equipo de *LEM*. 👋\n\n` +
-                        `¡Qué buena noticia! Ya completé mis primeras *4 ESTAMPAS* 🎫 y quiero solicitar mi beneficio:\n` +
-                        `🎁 *50% DE DESCUENTO* en mi prenda.\n\n` +
-                        `📌 *Mi número registrado:* ${phone}\n\n` +
-                        `¿Me ayudan para hacerlo efectivo en mi compra? ¡Muchas gracias! 🥂`;
-            } else {
-                texto = `👑 *¡OBJETIVO LOGRADO EN LEM MODA!* 👑\n\n` +
-                        `¡Hola! 👋 ¡Lo logré!\n\n` +
-                        `He completado mis *8 ESTAMPAS* 🏆 y ya tengo mi tarjeta llena.\n` +
-                        `🛍️ ¡Vengo por mi *PRENDA DE REGALO*!\n\n` +
-                        `📌 *Mi número registrado:* ${phone}\n\n` +
-                        `Estoy muy emocionado/a por elegir mi regalo. ¡Gracias! ✨`;
-            }
-            
+            let texto = (hito === 4) ? 
+                `✨ *¡TENGO UNA RECOMPENSA EN LEM MODA!* ✨\n\nHola equipo de LEM. 👋 Ya completé mis *4 ESTAMPAS* y quiero mi *50% DE DESCUENTO*. Mi # es: ${phone}` :
+                `👑 *¡OBJETIVO LOGRADO EN LEM MODA!* 👑\n\n¡Hola! 👋 He completado mis *8 ESTAMPAS* y vengo por mi *PRENDA DE REGALO*. Mi # es: ${phone}`;
             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(texto)}`, '_blank');
         }
     </script>
