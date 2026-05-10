@@ -1,333 +1,299 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LEM MODA | Elite System</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LEM MODA | Elite</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <style>
-        :root {
-            --accent: #d4a373; /* Dinámico vía JS */
-            --bg-dark: #050505;
-            --glass: rgba(15, 15, 15, 0.7);
-            --gold: linear-gradient(135deg, #d4a373 0%, #b08968 100%);
-            --silver: linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%);
-        }
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+<style>
+:root {
+    --gold: #d4a24c;
+    --gold-soft: #f4d38a;
+    --accent: #d4a24c; /* Dinámico por temporada */
+    --bg-dark: #050505;
+    --glass: rgba(15, 15, 15, 0.85);
+}
 
-        body {
-            background: var(--bg-dark);
-            font-family: 'Inter', sans-serif;
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-        }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* Fondo Cinematográfico */
-        .ambient-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% -20%, #3c2812 0%, #000 70%);
-        }
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top, #2a1b0c 0%, #000 70%);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .main-container {
-            width: 100%;
-            max-width: 1200px;
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 40px;
-            padding: 40px;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 0.8s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
-        }
+/* Contenedor Maestro para PC y Móvil */
+.wrapper {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 30px;
+    animation: fadeIn 0.8s ease-out;
+}
 
-        /* Panel Izquierdo: La Experiencia */
-        .experience-panel {
-            background: var(--glass);
-            border: 1px solid rgba(212, 163, 115, 0.15);
-            border-radius: 40px;
-            padding: 50px;
-            backdrop-filter: blur(25px);
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-            position: relative;
-        }
+.card-container {
+    background: var(--glass);
+    border: 1px solid rgba(212, 162, 76, 0.15);
+    border-radius: 45px;
+    padding: 40px;
+    backdrop-filter: blur(25px);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+    position: relative;
+    overflow: hidden;
+}
 
-        .season-tag {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 0.9rem;
-            letter-spacing: 5px;
-            color: var(--accent);
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            display: block;
-            text-align: center;
-        }
+/* Banner de Temporada Superior */
+.season-banner {
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: 6px;
+    font-size: 0.85rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    display: block;
+}
 
-        .elite-header {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 72px;
-            font-weight: 300;
-            text-align: center;
-            margin-bottom: 40px;
-            background: linear-gradient(to bottom, #fff 30%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+.elite-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 68px;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 400;
+    color: #fff;
+}
 
-        /* Grid de Estampas Premium */
-        .stamp-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin: 40px 0;
-        }
+/* Estilo de Inputs y Botones de Estatus */
+.input-elite {
+    width: 100%;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(212, 162, 76, 0.2);
+    height: 65px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    color: white;
+    text-align: center;
+    font-size: 1.1rem;
+    outline: none;
+    transition: 0.3s;
+}
 
-        .stamp-slot {
-            aspect-ratio: 1;
-            background: rgba(0,0,0,0.4);
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: all 0.5s ease;
-        }
+.input-elite:focus { border-color: var(--gold); background: rgba(0,0,0,0.8); }
 
-        .stamp-slot.active {
-            background: #fff;
-            border: none;
-            box-shadow: 0 0 30px rgba(255,255,255,0.2);
-        }
+.btn-main {
+    width: 100%;
+    height: 65px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #c59c6d 0%, #8b6a38 100%);
+    color: black;
+    font-weight: 600;
+    letter-spacing: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
 
-        .stamp-slot img { width: 65%; opacity: 0; transform: scale(0.5); transition: 0.4s; }
-        .stamp-slot.active img { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 5px rgba(0,0,0,0.2)); }
+.btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(197, 156, 109, 0.3); }
 
-        /* Hitos Especiales */
-        .slot-special { border-width: 2px; }
-        .slot-silver { border-color: #bdc3c7; }
-        .slot-gold { border-color: #d4a373; animation: pulseGold 2s infinite; }
+/* Grid de Sellos con Glow */
+.stamp-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 30px 0;
+}
 
-        .reward-label {
-            position: absolute; font-size: 0.55rem; font-weight: 700;
-            text-align: center; line-height: 1; letter-spacing: 1px;
-        }
+.slot {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: 0.5s;
+}
 
-        /* Panel Derecho: Info & QR */
-        .side-panel { display: flex; flex-direction: column; gap: 20px; }
-        
-        .glass-card {
-            background: var(--glass);
-            border-radius: 30px;
-            padding: 30px;
-            border: 1px solid rgba(212, 163, 115, 0.1);
-            backdrop-filter: blur(10px);
-        }
+.slot.active {
+    background: #fff;
+    box-shadow: 0 0 25px rgba(255,255,255,0.4);
+    border: none;
+}
 
-        .qr-wrapper {
-            background: #fff; padding: 15px; border-radius: 20px;
-            margin: 0 auto; display: inline-block;
-        }
+.slot.active img { width: 70%; }
 
-        /* Botones de Élite */
-        .btn-luxury {
-            width: 100%; padding: 20px; border-radius: 18px; border: none;
-            background: var(--gold); color: #000; font-weight: 700;
-            letter-spacing: 3px; cursor: pointer; transition: 0.3s;
-            text-transform: uppercase; font-size: 0.8rem;
-        }
+.slot-special { border: 2px solid var(--accent); }
+.slot-special.active { box-shadow: 0 0 30px var(--accent); }
 
-        .btn-luxury:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(212, 163, 115, 0.3); }
+.reward-text {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--accent);
+    line-height: 1.1;
+}
 
-        /* Animaciones */
-        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulseGold { 0%, 100% { box-shadow: 0 0 5px var(--accent); } 50% { box-shadow: 0 0 20px var(--accent); } }
+/* Panel QR e Identidad */
+.side-panel { display: flex; flex-direction: column; gap: 20px; }
+.glass-panel {
+    background: var(--glass);
+    border-radius: 35px;
+    padding: 30px;
+    border: 1px solid rgba(212, 162, 76, 0.1);
+    backdrop-filter: blur(15px);
+    text-align: center;
+}
 
-        /* Responsive Móvil (Tu Honor 200 Lite) */
-        @media (max-width: 900px) {
-            .main-container { grid-template-columns: 1fr; padding: 20px; margin-top: 10px; }
-            .experience-panel { padding: 30px; border-radius: 35px; }
-            .elite-header { font-size: 48px; }
-            .stamp-grid { gap: 12px; }
-            .side-panel { order: -1; }
-        }
+.qr-bg {
+    background: white;
+    padding: 15px;
+    border-radius: 25px;
+    display: inline-block;
+}
 
-        /* Overlay de Éxito */
-        #success-screen {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 2000; display: none; align-items: center; justify-content: center;
-            backdrop-filter: blur(15px);
-        }
-    </style>
+/* Animaciones */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+@media(max-width: 900px) {
+    .wrapper { grid-template-columns: 1fr; padding: 15px; }
+    .side-panel { order: -1; }
+    .elite-title { font-size: 52px; }
+}
+</style>
 </head>
 <body>
 
-    <div class="ambient-bg"></div>
+<div class="wrapper">
+    <div class="card-container" id="mainCard">
+        <span id="seasonTag" class="season-banner"></span>
+        <h1 class="elite-title">Elite</h1>
 
-    <div id="success-screen">
-        <div style="text-align: center; max-width: 400px; padding: 40px;">
-            <h2 id="successTitle" style="font-family: 'Cormorant Garamond'; font-size: 50px; color: var(--accent);"></h2>
-            <p id="successDesc" style="margin: 20px 0; color: #aaa; font-weight: 300;"></p>
-            <div id="waAction"></div>
-            <button onclick="closeSuccess()" style="background:transparent; border:none; color:#555; margin-top:30px; cursor:pointer; letter-spacing:2px;">REGRESAR</button>
+        <div id="authArea">
+            <div style="max-width: 350px; margin: 0 auto;">
+                <input type="tel" id="uPhone" class="input-elite" placeholder="WHATSAPP">
+                <input type="password" id="uPin" class="input-elite" placeholder="PIN" maxlength="4">
+                <button class="btn-main" onclick="handleAccess()">Acceder al Círculo</button>
+            </div>
+        </div>
+
+        <div id="appArea" style="display:none;">
+            <div style="text-align:center; margin-bottom:20px;">
+                <button class="btn-main" style="max-width:240px; height:50px; font-size:0.7rem;" onclick="toggleRewards(true)">BENEFICIOS</button>
+            </div>
+            <div class="stamp-grid" id="stamps"></div>
+            <p id="counterTxt" style="text-align:center; letter-spacing:4px; font-size:0.8rem; color:var(--accent); font-weight:600;"></p>
         </div>
     </div>
 
-    <div class="main-container">
+    <div class="side-panel">
+        <div class="glass-panel">
+            <h3 style="font-family:'Cormorant Garamond'; font-size:24px; margin-bottom:20px;">Identidad Digital</h3>
+            <div class="qr-bg">
+                <canvas id="qrCode"></canvas>
+            </div>
+            <p style="margin-top:15px; font-size:0.65rem; color:#888; letter-spacing:2px;">ESCANEÉ EN BOUTIQUE</p>
+        </div>
+
+        <div class="glass-panel" style="display:flex; align-items:center; gap:15px; text-align:left;">
+            <i class="fa-solid fa-star" style="color:var(--accent); font-size:20px;"></i>
+            <div>
+                <p style="font-size:0.7rem; font-weight:700; letter-spacing:1px;">MEMBRECÍA ACTIVA</p>
+                <p style="font-size:0.6rem; color:#888;">Acceso a preventas exclusivas.</p>
+            </div>
+        </div>
+
+        <button class="btn-main" style="background:transparent; border:1px solid #333; color:#555;" onclick="location.reload()">FINALIZAR SESIÓN</button>
+    </div>
+</div>
+
+<script>
+// Configuración Firebase
+const firebaseConfig = { databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/" };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Motor de Temporada (Tu Identidad Única)
+function setSeason() {
+    const month = new Date().getMonth();
+    const campaigns = [
+        { name: "✦ Enero: Renace tu Estilo ✦", color: "#d4a24c" },
+        { name: "✦ Febrero: Nude & Love ✦", color: "#a4161a" },
+        { name: "✦ Mayo: Elegancia Maternal ✦", color: "#d4a24c" }, // Ejemplo para hoy
+        { name: "✦ Diciembre: Navidad LEM ✦", color: "#d4af37" }
+    ];
+    const current = campaigns.find(c => c.name.includes("Mayo")) || campaigns[0];
+    document.getElementById('seasonTag').innerText = current.name;
+    document.documentElement.style.setProperty('--accent', current.color);
+}
+
+function handleAccess() {
+    const p = document.getElementById('uPhone').value.trim();
+    const n = document.getElementById('uPin').value.trim();
+    if(!p || !n) return;
+
+    const ref = db.ref('lem_users/' + p);
+    ref.once('value', s => {
+        const d = s.val();
+        if(!d) ref.set({pin: n, puntos: 0}).then(() => login(p));
+        else if(d.pin === n) login(p);
+        else alert("PIN incorrecto");
+    });
+}
+
+function login(phone) {
+    document.getElementById('authArea').style.display='none';
+    document.getElementById('appArea').style.display='block';
+
+    QRCode.toCanvas(document.getElementById('qrCode'), phone, { width: 150, margin: 1 });
+
+    db.ref('lem_users/' + phone + '/puntos').on('value', snap => {
+        const p = snap.val() || 0;
+        document.getElementById('counterTxt').innerText = `${p} / 8 SELLOS`;
         
-        <div class="experience-panel">
-            <span id="seasonBanner" class="season-tag"></span>
-            <h1 class="elite-header">Elite</h1>
-            
-            <div id="authBox">
-                <div style="max-width: 320px; margin: 0 auto;">
-                    <input type="tel" id="uPhone" placeholder="WHATSAPP" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(212,163,115,0.2); padding:18px; border-radius:15px; color:white; margin-bottom:15px; text-align:center; outline:none;">
-                    <input type="password" id="uPin" placeholder="PIN" maxlength="4" style="width:100%; background:rgba(0,0,0,0.5); border:1px solid rgba(212,163,115,0.2); padding:18px; border-radius:15px; color:white; margin-bottom:20px; text-align:center; outline:none;">
-                    <button class="btn-luxury" onclick="handleAuth()">Acceder al Círculo</button>
-                </div>
-            </div>
+        const grid = document.getElementById('stamps');
+        grid.innerHTML = '';
 
-            <div id="cardBox" style="display: none;">
-                <div class="stamp-grid" id="stamps"></div>
-                <div id="counter" style="text-align:center; letter-spacing:5px; color:var(--accent); font-size:0.7rem; font-weight:700;"></div>
-            </div>
-        </div>
+        for(let i=1; i<=8; i++) {
+            const s = document.createElement('div');
+            s.className = `slot ${i <= p ? 'active' : ''}`;
+            if(i === 4 || i === 8) s.classList.add('slot-special');
 
-        <div class="side-panel">
-            <div class="glass-card" style="text-align: center;">
-                <h4 style="font-family: 'Cormorant Garamond'; font-size: 24px; margin-bottom: 20px;">Identidad Digital</h4>
-                <div class="qr-wrapper">
-                    <canvas id="qr"></canvas>
-                </div>
-                <p style="margin-top:20px; font-size:0.6rem; color:#666; letter-spacing:2px;">ESCANEÉ EN BOUTIQUE</p>
-            </div>
-            
-            <div class="glass-card" style="display: flex; align-items: center; gap: 20px;">
-                <div style="font-size: 30px;">✦</div>
-                <div>
-                    <h5 style="font-size: 0.7rem; letter-spacing: 2px;">STATUS: <span id="statusLevel">MEMBRECÍA ACTIVA</span></h5>
-                    <p style="font-size: 0.6rem; color: #888;">Acceso exclusivo a preventas y eventos.</p>
-                </div>
-            </div>
-            
-            <button class="btn-luxury" style="background: transparent; border: 1px solid #222; color: #444;" onclick="location.reload()">Finalizar Sesión</button>
-        </div>
-    </div>
-
-    <script>
-        // Configuración de tu base de datos
-        const firebaseConfig = { databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // 1. Motor de Estacionalidad (Tu pedido core)
-        function initSeason() {
-            const m = new Date().getMonth();
-            const seasons = [
-                {t: "✦ Enero: Renueva tu Esencia ✦", c: "#d4a373"},
-                {t: "✦ Febrero: Nude & Love ✦", c: "#a4161a"},
-                {t: "✦ Marzo: Power Woman ✦", c: "#9b5de5"},
-                {t: "✦ Abril: Esencia Pura ✦", c: "#d4a373"},
-                {t: "✦ Mayo: Elegancia Maternal ✦", c: "#f8adbc"},
-                {t: "✦ Junio: Black Edition ✦", c: "#8db6d4"},
-                {t: "✦ Julio: Summer Elite ✦", c: "#e9c46a"},
-                {t: "✦ Agosto: New Season ✦", c: "#38b000"},
-                {t: "✦ Septiembre: Nude Essence ✦", c: "#b08968"},
-                {t: "✦ Octubre: Golden Hour ✦", c: "#bc6c25"},
-                {t: "✦ Noviembre: Black Friday Elite ✦", c: "#bdc3c7"},
-                {t: "✦ Diciembre: Navidad LEM ✦", c: "#d4af37"}
-            ];
-            document.getElementById('seasonBanner').innerText = seasons[m].t;
-            document.documentElement.style.setProperty('--accent', seasons[m].c);
-        }
-
-        // 2. Lógica de Autenticación Invisible
-        function handleAuth() {
-            const p = document.getElementById('uPhone').value.trim();
-            const n = document.getElementById('uPin').value.trim();
-            if(!p || !n) return;
-
-            const ref = db.ref('lem_users/' + p);
-            ref.once('value', s => {
-                const d = s.val();
-                if(!d) ref.set({pin: n, puntos: 0}).then(() => startApp(p));
-                else if(d.pin === n) startApp(p);
-                else alert("PIN No Válido");
-            });
-        }
-
-        // 3. Renderizado de Interfaz de Élite
-        function startApp(p) {
-            document.getElementById('authBox').style.display = 'none';
-            document.getElementById('cardBox').style.display = 'block';
-            QRCode.toCanvas(document.getElementById('qr'), p, { width: 140, margin: 1, color: { dark: '#000', light: '#fff' } });
-
-            db.ref('lem_users/' + p + '/puntos').on('value', s => {
-                const pts = s.val() || 0;
-                document.getElementById('counter').innerText = `${pts} / 8 SELLOS`;
-                const grid = document.getElementById('stamps');
-                grid.innerHTML = '';
-
-                for(let i=1; i<=8; i++) {
-                    const slot = document.createElement('div');
-                    slot.className = `stamp-slot ${i <= pts ? 'active' : ''}`;
-                    if(i===4) slot.classList.add('slot-special', 'slot-silver');
-                    if(i===8) slot.classList.add('slot-special', 'slot-gold');
-                    
-                    if(i <= pts) {
-                        slot.innerHTML = `<img src="2.png.png">`;
-                    } else {
-                        if(i===4) slot.innerHTML = `<span class="reward-label" style="color:#bdc3c7">50%<br>OFF</span>`;
-                        if(i===8) slot.innerHTML = `<span class="reward-label" style="color:#d4a373">GIFT</span>`;
-                    }
-                    grid.appendChild(slot);
-                }
-                if(pts === 4 || pts === 8) triggerSuccess(pts, p);
-            });
-        }
-
-        // 4. Sistema de Recompensa (Copy de Marca)
-        function triggerSuccess(pts, p) {
-            const screen = document.getElementById('success-screen');
-            const title = document.getElementById('successTitle');
-            const desc = document.getElementById('successDesc');
-            const wa = document.getElementById('waAction');
-            
-            confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 }, colors: ['#d4a373', '#ffffff'] });
-            
-            screen.style.display = 'flex';
-            if(pts === 4) {
-                title.innerText = "Nivel Silver";
-                desc.innerText = "Has desbloqueado el 50% de descuento en tu próxima prenda. Tu lealtad define nuestro estilo.";
-                wa.innerHTML = `<button class="btn-luxury" onclick="sendWA('${p}', 4)">Reclamar Beneficio</button>`;
+            if(i <= p) {
+                s.innerHTML = '<img src="2.png.png">';
             } else {
-                title.innerText = "Nivel Gold";
-                desc.innerText = "Tarjeta completada. Una prenda de nuestra colección seleccionada te espera como obsequio.";
-                wa.innerHTML = `<button class="btn-luxury" onclick="sendWA('${p}', 8)">Reclamar Obsequio</button>`;
+                if(i === 4) s.innerHTML = '<span class="reward-text">50%<br>OFF</span>';
+                else if(i === 8) s.innerHTML = '<span class="reward-text">GIFT</span>';
+                else s.innerHTML = `<span style="font-size:0.8rem; color:#444;">${i}</span>`;
             }
+            grid.appendChild(s);
         }
+        if(p === 4 || p === 8) celebrate(p, phone);
+    });
+}
 
-        function sendWA(p, h) {
-            const msg = h === 4 
-                ? `✨ *SOLICITUD DE BENEFICIO SILVER* ✨\nHe completado 4 estampas en LEM MODA.\nID Cliente: ${p}\nSolicito mi 50% OFF.`
-                : `👑 *RECLAMO DE PRENDA GOLD* 👑\nHe completado mi tarjeta Elite.\nID Cliente: ${p}\nVengo por mi prenda de regalo.`;
-            window.open(`https://wa.me/593984909967?text=${encodeURIComponent(msg)}`);
-        }
+function celebrate(pts, phone) {
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d4a24c', '#ffffff'] });
+    // Aquí puedes disparar el modal de éxito con el mensaje de WhatsApp que ya definimos
+}
 
-        function closeSuccess() { document.getElementById('success-screen').style.display = 'none'; }
-
-        initSeason();
-    </script>
+setSeason();
+</script>
 </body>
 </html>
