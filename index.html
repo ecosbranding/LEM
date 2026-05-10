@@ -11,14 +11,7 @@
     <meta property="og:title" content="LEM MODA | Elite">
     <meta property="og:description" content="¡Colecciona tus estampas y canjea premios exclusivos en LEM MODA!">
     <meta property="og:image" content="https://lemmoda.vercel.app/logo-lem-elite.png"> 
-    <meta property="og:image:secure_url" content="https://lemmoda.vercel.app/logo-lem-elite.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="LEM MODA | Elite">
-    <meta name="twitter:description" content="¡Colecciona tus estampas y canjea premios exclusivos en LEM MODA!">
-    <meta name="twitter:image" content="https://lemmoda.vercel.app/logo-lem-elite.png">
 
     <link rel="icon" type="image/png" href="logo-lem-elite.png">
     <link rel="manifest" href="manifest.json">
@@ -34,9 +27,10 @@
             --lem-cafe: #784311; 
             --lem-gold: #d4a373; 
             --lem-verde: #38b000;
-            /* Nuevos colores para marcos */
             --silver-fine: #bdc3c7;
             --gold-fine: #d4af37;
+            /* Esta variable cambiará automáticamente */
+            --accent-event: var(--lem-gold);
         }
 
         body { 
@@ -48,7 +42,28 @@
             align-items: center; 
             justify-content: center; 
             min-height: 100vh; 
-            overflow: hidden; 
+            overflow-x: hidden; 
+        }
+
+        /* BANNER DE TEMPORADA AUTOMÁTICO */
+        #seasonalBanner {
+            position: absolute;
+            top: 25px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.65rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--accent-event);
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            animation: fadeInDown 1.2s ease;
+            z-index: 100;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .container { width: 90%; max-width: 380px; text-align: center; position: relative; z-index: 10; }
@@ -57,8 +72,9 @@
             width: 120px; height: 120px;
             background: #fff; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 30px; border: 2px solid var(--lem-gold); 
-            box-shadow: 0 0 20px rgba(212, 163, 115, 0.2); 
+            margin: 0 auto 30px; border: 2px solid var(--accent-event); 
+            box-shadow: 0 0 25px rgba(212, 163, 115, 0.1); 
+            transition: border 0.5s ease;
         }
         
         .circle-logo { width: 70%; height: auto; }
@@ -90,7 +106,6 @@
         .slot::before { content: attr(data-index); color: #444; font-weight: bold; position: absolute; font-size: 0.7rem; }
         .slot.active::before { display: none; }
 
-        /* Estilos añadidos para marcos y textos interiores */
         .silver-frame { border: 1.5px solid var(--silver-fine) !important; }
         .gold-frame { border: 1.5px solid var(--gold-fine) !important; }
         .premio-text { font-size: 0.55rem; line-height: 1.1; font-weight: bold; padding: 2px; text-transform: uppercase; }
@@ -104,14 +119,14 @@
         }
 
         .btn-main { 
-            background: linear-gradient(135deg, #d4a373 0%, #b08968 100%); 
+            background: linear-gradient(135deg, var(--accent-event) 0%, #b08968 100%); 
             color: #000; border: none; padding: 16px; border-radius: 15px; 
             width: 100%; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
-            cursor: pointer;
+            cursor: pointer; transition: all 0.3s ease;
         }
 
         .btn-beneficios {
-            background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold);
+            background: transparent; color: var(--accent-event); border: 1px solid var(--accent-event);
             padding: 10px 20px; border-radius: 20px; margin-bottom: 15px;
             cursor: pointer; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;
         }
@@ -122,33 +137,32 @@
         }
 
         .modal-content {
-            background: #0a0a0a; border: 1px solid var(--lem-gold); padding: 30px;
+            background: #0a0a0a; border: 1px solid var(--accent-event); padding: 30px;
             border-radius: 25px; width: 85%; max-width: 350px; text-align: center;
         }
 
         .premio-box {
             background: rgba(56, 176, 0, 0.1); border: 1px dashed var(--lem-verde);
             border-radius: 15px; padding: 15px; margin-top: 15px; display: none;
-            animation: fadeIn 0.5s ease;
         }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         #success-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.98); z-index: 100; align-items: center; justify-content: center; 
+            background: rgba(0,0,0,0.98); z-index: 1000; align-items: center; justify-content: center; 
         }
 
         .success-card { 
-            background: #000; border: 1px solid var(--lem-gold); 
+            background: #000; border: 1px solid var(--accent-event); 
             border-radius: 35px; padding: 30px; width: 80%; text-align: center; 
         }
     </style>
 </head>
 <body>
+    <div id="seasonalBanner">LEM MODA | ELITE PROGRAM</div>
+
     <div id="modalBeneficios" class="modal">
         <div class="modal-content">
-            <h3 style="color: var(--lem-gold); letter-spacing: 2px;">BENEFICIOS LEM</h3>
+            <h3 style="color: var(--accent-event); letter-spacing: 2px;">BENEFICIOS LEM</h3>
             <ul style="text-align: left; font-size: 0.85rem; line-height: 1.8; color: #ccc;">
                 <li>• <strong>4 ESTAMPAS:</strong> 50% de descuento en una prenda de tu compra actual.</li>
                 <li>• <strong>8 ESTAMPAS:</strong> 1 Prenda seleccionada de regalo.</li>
@@ -160,7 +174,7 @@
     <div id="success-overlay">
         <div class="success-card">
             <div class="card-logo-box"><img src="1.png.png" style="width: 100px;"></div>
-            <h2 id="successTitle" style="color: var(--lem-gold); font-weight: 300; letter-spacing: 2px;">¡Felicidades!</h2>
+            <h2 id="successTitle" style="color: var(--accent-event); font-weight: 300; letter-spacing: 2px;">¡Felicidades!</h2>
             <p id="successMsg" style="font-size: 0.85rem; color: #aaa; line-height: 1.5;"></p>
             <div id="waAction"></div>
             <button class="btn-main" style="margin-top: 15px; background: transparent; color: #555; border: 1px solid #222;" onclick="document.getElementById('success-overlay').style.display='none'">Volver</button>
@@ -170,7 +184,7 @@
     <div class="container">
         <div id="authPanel">
             <div class="brand-circle"><img src="1.png.png" class="circle-logo"></div>
-            <h3 style="letter-spacing: 5px; color: var(--lem-gold); font-weight: 300;">BIENVENIDO</h3>
+            <h3 style="letter-spacing: 5px; color: var(--accent-event); font-weight: 300;">BIENVENIDO</h3>
             <input type="tel" id="userPhone" class="input-box" placeholder="WhatsApp">
             <input type="password" id="userPin" class="input-box" placeholder="PIN de 4 dígitos" maxlength="4">
             <button class="btn-main" onclick="accessSystem()">Ingresar</button>
@@ -181,10 +195,8 @@
             <div class="card">
                 <div class="card-logo-box"><img src="1.png.png" class="card-logo"></div>
                 <div class="stamp-grid" id="stampGrid"></div>
-                <p id="counterLabel" style="color: var(--lem-gold); font-size: 0.75rem; letter-spacing: 1px;">Sincronizando...</p>
-                
+                <p id="counterLabel" style="color: var(--accent-event); font-size: 0.75rem; letter-spacing: 1px;">Sincronizando...</p>
                 <div id="premioNotif" class="premio-box"></div>
-
                 <div style="background:#fff; padding:8px; border-radius:12px; display:inline-block; margin-top: 10px;">
                     <canvas id="qr-canvas"></canvas>
                 </div>
@@ -202,9 +214,31 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function toggleModal(show) {
-            document.getElementById('modalBeneficios').style.display = show ? 'flex' : 'none';
+        // --- CEREBRO DE FECHAS (SISTEMA AUTOMATIZADO) ---
+        function setSeasonalTheme() {
+            const now = new Date();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            const banner = document.getElementById('seasonalBanner');
+            let theme = { text: "LEM MODA | ELITE PROGRAM", color: "#d4a373" };
+
+            if (month === 1) theme = { text: "✨ NEW YEAR, NEW LOOK | 2026 ✨", color: "#ffffff" };
+            else if (month === 2) theme = { text: "❤️ LOVE IS IN THE AIR | SAN VALENTÍN ❤️", color: "#e63946" };
+            else if (month === 5) theme = { text: "✦ MOTHERS MONTH | ELEGANCIA PARA ELLA ✦", color: "#ffb7c5" };
+            else if (month === 6) theme = { text: "👔 LE CHIC PÈRE | CELEBRAMOS A PAPÁ 👔", color: "#8db6d4" };
+            else if (month === 8) theme = { text: "☀️ SUMMER VIBES | MES DE LAS ARTES ☀️", color: "#e2711d" };
+            else if (month === 10) theme = { text: "🎃 BLACK OCTOBER | EXCLUSIVE STYLE 🎃", color: "#f9a03f" };
+            else if (month === 11) theme = { text: "🖤 BLACK FRIDAY IS COMING | PREPÁRATE 🖤", color: "#888888" };
+            else if (month === 12) theme = { text: "❄️ LUXURY GIFTING SEASON | NAVIDAD ❄️", color: "#d4af37" };
+
+            banner.innerText = theme.text;
+            document.documentElement.style.setProperty('--accent-event', theme.color);
         }
+
+        setSeasonalTheme();
+
+        // --- FUNCIONES DE CORE ---
+        function toggleModal(show) { document.getElementById('modalBeneficios').style.display = show ? 'flex' : 'none'; }
 
         function accessSystem() {
             const phone = document.getElementById('userPhone').value.trim();
@@ -237,14 +271,12 @@
                     s.className = 'slot' + (isActive ? ' active' : '');
                     s.setAttribute('data-index', index);
 
-                    // Aplicar marcos en 4 y 8
                     if(index === 4) s.classList.add('silver-frame');
                     if(index === 8) s.classList.add('gold-frame');
 
                     if(isActive) {
                         s.innerHTML = '<img src="2.png.png">';
                     } else {
-                        // Textos dentro de los círculos vacíos
                         if(index === 4) s.innerHTML = '<span class="premio-text silver">50% OFF<br>PRENDA</span>';
                         else if (index === 8) s.innerHTML = '<span class="premio-text gold">PRENDA<br>REGALO</span>';
                         else s.innerHTML = ''; 
@@ -267,7 +299,7 @@
                 overlay.style.display = 'flex';
                 title.innerText = "¡Recompensa Alcanzada!";
                 msg.innerText = "¡Felicidades! Por tus 4 estampas tienes el 50% de descuento en una prenda.";
-                waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white;" onclick="enviarWA('${phone}', 4)">Reclamar por WhatsApp</button>`;
+                waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white; border:none;" onclick="enviarWA('${phone}', 4)">Reclamar por WhatsApp</button>`;
                 notifBox.style.display = 'block';
                 notifBox.innerHTML = `<small style="color:var(--lem-verde)">✓ Tienes un 50% OFF disponible</small>`;
             } else if (p >= 8) {
@@ -275,7 +307,7 @@
                 overlay.style.display = 'flex';
                 title.innerText = "¡Nivel Completado!";
                 msg.innerText = "¡Increíble! Has completado las 8 estampas. ¡Tu prenda de regalo te espera!";
-                waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white;" onclick="enviarWA('${phone}', 8)">Reclamar Regalo</button>`;
+                waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white; border:none;" onclick="enviarWA('${phone}', 8)">Reclamar Regalo</button>`;
                 notifBox.style.display = 'block';
                 notifBox.innerHTML = `<small style="color:var(--lem-verde)">✓ ¡Prenda de regalo lista!</small>`;
             } else {
@@ -290,7 +322,6 @@
         function enviarWA(phone, hito) {
             const waNumber = "593984909967"; 
             let texto = "";
-            
             if (hito === 4) {
                 texto = `✨ *¡TENGO UNA RECOMPENSA EN LEM MODA!* ✨\n\n` +
                         `Hola, equipo de LEM. 👋\n\n` +
