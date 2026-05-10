@@ -98,16 +98,17 @@
 
         let html5QrCode;
 
-        // NUEVA FUNCIÓN: Registra la acción en una carpeta por fecha
-        function registrarLog(phone, accion, puntosNuevos) {
-            const hoy = new Date().toISOString().split('T')[0]; // Ejemplo: 2026-05-10
-            const logRef = db.ref('historial_acciones/' + hoy).push();
+        // --- NUEVA FUNCIÓN DE REGISTRO POR FECHA ---
+        function registrarAccion(phone, accion, puntosFinales) {
+            const ahora = new Date();
+            const fechaKey = ahora.toISOString().split('T')[0]; // Formato: YYYY-MM-DD
             
+            const logRef = db.ref('historial_puntos/' + fechaKey).push();
             logRef.set({
                 whatsapp: phone,
                 accion: accion,
-                puntos_resultantes: puntosNuevos,
-                hora: new Date().toLocaleTimeString(),
+                puntos_posteriores: puntosFinales,
+                hora: ahora.toLocaleTimeString(),
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         }
@@ -140,6 +141,7 @@
             const alertBox = document.getElementById('adminRewardAlert');
             const alertText = document.getElementById('rewardText');
             const resetBtn = document.getElementById('resetBtn');
+
             alertBox.classList.remove('alert-silver', 'alert-gold');
 
             if (puntos === 4) {
@@ -164,15 +166,12 @@
             
             ref.transaction((c) => {
                 let newVal = (c || 0) + change;
-                const finalVal = (newVal < 0) ? 0 : (newVal > 8 ? 8 : newVal);
-                
-                // Si el valor cambió, registramos en el log diario
-                if (c !== finalVal) {
-                    const tipoAccion = change > 0 ? "Sello Agregado" : "Sello Quitado";
-                    registrarLog(phone, tipoAccion, finalVal);
+                return (newVal < 0) ? 0 : (newVal > 8 ? 8 : newVal);
+            }, (error, committed, snapshot) => {
+                if (committed) {
+                    const tipo = change > 0 ? "Sello Agregado" : "Sello Quitado";
+                    registrarAccion(phone, tipo, snapshot.val());
                 }
-                
-                return finalVal;
             });
         }
 
@@ -180,7 +179,7 @@
             if(confirm("¿Confirmas que ya entregaste el premio y quieres reiniciar los puntos a 0?")) {
                 const phone = document.getElementById('clientPhone').innerText.replace("WhatsApp: ", "");
                 db.ref('lem_users/' + phone + '/puntos').set(0);
-                registrarLog(phone, "Premio Entregado - Reset", 0);
+                registrarAccion(phone, "Premio Entregado (Reset)", 0);
             }
         }
 
