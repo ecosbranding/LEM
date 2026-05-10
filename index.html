@@ -31,73 +31,49 @@
             overflow: hidden; 
         }
 
+        /* --- DECORACIÓN DE HORMIGAS (OPCIÓN 2) --- */
+        .ant {
+            position: fixed;
+            width: 3px;
+            height: 1.5px;
+            background: rgba(212, 163, 115, 0.15);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        @keyframes ant-walk {
+            0% { transform: translate(-10vw, 0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translate(110vw, 20px) rotate(5deg); opacity: 0; }
+        }
+
         .container { width: 90%; max-width: 380px; text-align: center; position: relative; z-index: 10; }
         
-        .brand-circle {
-            width: 120px; height: 120px;
-            background: #fff; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 30px; border: 2px solid var(--lem-gold); 
-            box-shadow: 0 0 20px rgba(212, 163, 115, 0.2); 
-        }
-        
+        /* [Se mantienen todos tus estilos de tarjetas, slots y animaciones de brillo igual que antes] */
+        .brand-circle { width: 120px; height: 120px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; border: 2px solid var(--lem-gold); box-shadow: 0 0 20px rgba(212, 163, 115, 0.2); }
         .circle-logo { width: 70%; height: auto; }
-        
-        .card { 
-            background: rgba(20, 15, 10, 0.6); 
-            border: 1px solid rgba(212, 163, 115, 0.2); 
-            border-radius: 35px; padding: 25px; 
-            backdrop-filter: blur(15px);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.8); 
-        }
-
+        .card { background: rgba(20, 15, 10, 0.6); border: 1px solid rgba(212, 163, 115, 0.2); border-radius: 35px; padding: 25px; backdrop-filter: blur(15px); box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
         .card-logo-box { background: #fff; border-radius: 12px; padding: 8px; display: inline-block; margin-bottom: 20px; }
         .card-logo { width: 110px; }
-        
         .stamp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
-        
-        /* Estilos base de los slots */
-        .slot { 
-            aspect-ratio: 1; background: rgba(0,0,0,0.8); 
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            border: 1px solid rgba(212, 163, 115, 0.1); position: relative;
-            flex-direction: column; text-align: center; overflow: hidden;
-        }
-
+        .slot { aspect-ratio: 1; background: rgba(0,0,0,0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(212, 163, 115, 0.1); position: relative; flex-direction: column; text-align: center; overflow: hidden; }
         .slot.active { background: #fff; border: 2.5px solid var(--lem-verde); }
         .slot img { width: 60%; display: none; }
         .slot.active img { display: block; filter: none; width: 65%; }
-
         .slot::before { content: attr(data-index); color: #444; font-weight: bold; position: absolute; font-size: 0.7rem; }
         .slot.active::before { display: none; }
-
-        /* MARCOS ESPECIALES SUTILES (HITO 4 Y 8) */
         .slot-premio { border-width: 1.5px !important; }
-        
-        .silver-frame { 
-            border-color: var(--silver-fine) !important;
-            box-shadow: 0 0 10px rgba(189, 195, 199, 0.2);
-            animation: shine-silver 4s infinite;
-        }
-        
-        .gold-frame { 
-            border-color: var(--gold-fine) !important;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
-            animation: shine-gold 4s infinite;
-        }
-
+        .silver-frame { border-color: var(--silver-fine) !important; box-shadow: 0 0 10px rgba(189, 195, 199, 0.2); animation: shine-silver 4s infinite; }
+        .gold-frame { border-color: var(--gold-fine) !important; box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); animation: shine-gold 4s infinite; }
         .premio-text { font-size: 0.55rem; color: #fff; line-height: 1.1; font-weight: bold; padding: 2px; }
         .premio-text.silver { color: #bdc3c7; }
         .premio-text.gold { color: #d4af37; }
 
-        @keyframes shine-silver {
-            0% { border-color: #7f8c8d; } 50% { border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); } 100% { border-color: #7f8c8d; }
-        }
-        @keyframes shine-gold {
-            0% { border-color: #917617; } 50% { border-color: #f7e08b; box-shadow: 0 0 15px rgba(247,224,139,0.3); } 100% { border-color: #917617; }
-        }
+        @keyframes shine-silver { 0% { border-color: #7f8c8d; } 50% { border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); } 100% { border-color: #7f8c8d; } }
+        @keyframes shine-gold { 0% { border-color: #917617; } 50% { border-color: #f7e08b; box-shadow: 0 0 15px rgba(247,224,139,0.3); } 100% { border-color: #917617; } }
 
-        /* Resto de estilos (Entradas, Botones, Modales) */
         .input-box { background: #000; border: 1px solid rgba(212, 163, 115, 0.2); color: #fff; padding: 16px; border-radius: 15px; width: 100%; margin-bottom: 12px; box-sizing: border-box; text-align: center; outline: none; }
         .btn-main { background: linear-gradient(135deg, #d4a373 0%, #b08968 100%); color: #000; border: none; padding: 16px; border-radius: 15px; width: 100%; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
         .btn-beneficios { background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold); padding: 10px 20px; border-radius: 20px; margin-bottom: 15px; cursor: pointer; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; }
@@ -163,6 +139,19 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // --- GENERADOR DE HORMIGAS ---
+        function spawnAnts() {
+            for(let i=0; i<3; i++) {
+                let ant = document.createElement('div');
+                ant.className = 'ant';
+                ant.style.top = (20 + (i * 30)) + '%';
+                ant.style.animation = `ant-walk ${20 + (i * 5)}s linear infinite`;
+                ant.style.animationDelay = (i * 4) + 's';
+                document.body.appendChild(ant);
+            }
+        }
+        window.onload = () => { spawnAnts(); if(typeof startScanner === 'function') startScanner(); };
+
         function toggleModal(show) { document.getElementById('modalBeneficios').style.display = show ? 'flex' : 'none'; }
 
         function accessSystem() {
@@ -193,25 +182,14 @@
                     const s = document.createElement('div');
                     const isActive = i < p;
                     const index = i + 1;
-                    
                     s.className = 'slot' + (isActive ? ' active' : '');
                     s.setAttribute('data-index', index);
-
-                    // APLICAR MARCOS ESPECIALES
                     if(index === 4) s.classList.add('slot-premio', 'silver-frame');
                     if(index === 8) s.classList.add('slot-premio', 'gold-frame');
-
-                    // CONTENIDO DEL SELLO
-                    if(isActive) {
-                        s.innerHTML = '<img src="2.png.png">';
-                    } else {
-                        if(index === 4) {
-                            s.innerHTML = '<span class="premio-text silver">50% OFF<br>EN PRENDA</span>';
-                        } else if (index === 8) {
-                            s.innerHTML = '<span class="premio-text gold">PRENDA<br>GRATIS</span>';
-                        } else {
-                            s.innerHTML = ''; // Se usa el data-index (CSS)
-                        }
+                    if(isActive) { s.innerHTML = '<img src="2.png.png">'; } else {
+                        if(index === 4) s.innerHTML = '<span class="premio-text silver">50% OFF<br>EN PRENDA</span>';
+                        else if (index === 8) s.innerHTML = '<span class="premio-text gold">PRENDA<br>GRATIS</span>';
+                        else s.innerHTML = '';
                     }
                     grid.appendChild(s);
                 }
@@ -219,38 +197,30 @@
             });
         }
 
-        // [MANTENGO TUS FUNCIONES checkMilestones, lanzarConfeti y enviarWA IGUALES]
         function checkMilestones(p, phone) {
             const overlay = document.getElementById('success-overlay');
             const title = document.getElementById('successTitle');
             const msg = document.getElementById('successMsg');
             const waAction = document.getElementById('waAction');
             const notifBox = document.getElementById('premioNotif');
-
             if (p === 4) {
-                lanzarConfeti();
-                overlay.style.display = 'flex';
+                lanzarConfeti(); overlay.style.display = 'flex';
                 title.innerText = "¡Recompensa Alcanzada!";
                 msg.innerText = "¡Felicidades! Por tus 4 estampas tienes el 50% de descuento en una prenda.";
                 waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white;" onclick="enviarWA('${phone}', 4)">Reclamar por WhatsApp</button>`;
                 notifBox.style.display = 'block';
                 notifBox.innerHTML = `<small style="color:var(--lem-verde)">✓ Tienes un 50% OFF disponible</small>`;
             } else if (p >= 8) {
-                lanzarConfeti();
-                overlay.style.display = 'flex';
+                lanzarConfeti(); overlay.style.display = 'flex';
                 title.innerText = "¡Nivel Completado!";
                 msg.innerText = "¡Increíble! Has completado las 8 estampas. ¡Tu prenda de regalo te espera!";
                 waAction.innerHTML = `<button class="btn-main" style="background:#25d366; color:white;" onclick="enviarWA('${phone}', 8)">Reclamar Regalo</button>`;
                 notifBox.style.display = 'block';
                 notifBox.innerHTML = `<small style="color:var(--lem-verde)">✓ ¡Prenda de regalo lista!</small>`;
-            } else {
-                notifBox.style.display = 'none';
-            }
+            } else { notifBox.style.display = 'none'; }
         }
 
-        function lanzarConfeti() {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d4a373', '#784311', '#ffffff'] });
-        }
+        function lanzarConfeti() { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d4a373', '#784311', '#ffffff'] }); }
 
         function enviarWA(phone, hito) {
             const waNumber = "593984909967"; 
