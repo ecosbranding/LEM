@@ -11,14 +11,6 @@
     <meta property="og:title" content="LEM MODA | Elite">
     <meta property="og:description" content="¡Colecciona tus estampas y canjea premios exclusivos en LEM MODA!">
     <meta property="og:image" content="https://lemmoda.vercel.app/logo-lem-elite.png"> 
-    <meta property="og:image:secure_url" content="https://lemmoda.vercel.app/logo-lem-elite.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/png">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="LEM MODA | Elite">
-    <meta name="twitter:description" content="¡Colecciona tus estampas y canjea premios exclusivos en LEM MODA!">
-    <meta name="twitter:image" content="https://lemmoda.vercel.app/logo-lem-elite.png">
 
     <link rel="icon" type="image/png" href="logo-lem-elite.png">
     <link rel="manifest" href="manifest.json">
@@ -34,9 +26,10 @@
             --lem-cafe: #784311; 
             --lem-gold: #d4a373; 
             --lem-verde: #38b000;
-            /* Nuevos colores para marcos */
             --silver-fine: #bdc3c7;
             --gold-fine: #d4af37;
+            /* Variable para el color de temporada */
+            --accent-season: #d4a373; 
         }
 
         body { 
@@ -45,10 +38,26 @@
             font-family: 'Inter', sans-serif; 
             margin: 0; 
             display: flex; 
+            flex-direction: column; /* Asegura orden vertical */
             align-items: center; 
-            justify-content: center; 
+            justify-content: flex-start; /* Empieza desde arriba para dar aire en PC */
             min-height: 100vh; 
-            overflow: hidden; 
+            overflow-x: hidden;
+            padding: 20px 0;
+        }
+
+        /* BANNER DINÁMICO: Espacio garantizado */
+        .season-banner {
+            width: 100%;
+            text-align: center;
+            font-size: clamp(0.6rem, 2.5vw, 0.75rem);
+            letter-spacing: 3px;
+            color: var(--accent-season);
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 0 10px;
+            box-sizing: border-box;
         }
 
         .container { width: 90%; max-width: 380px; text-align: center; position: relative; z-index: 10; }
@@ -90,7 +99,6 @@
         .slot::before { content: attr(data-index); color: #444; font-weight: bold; position: absolute; font-size: 0.7rem; }
         .slot.active::before { display: none; }
 
-        /* Estilos añadidos para marcos y textos interiores */
         .silver-frame { border: 1.5px solid var(--silver-fine) !important; }
         .gold-frame { border: 1.5px solid var(--gold-fine) !important; }
         .premio-text { font-size: 0.55rem; line-height: 1.1; font-weight: bold; padding: 2px; text-transform: uppercase; }
@@ -111,8 +119,8 @@
         }
 
         .btn-beneficios {
-            background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold);
-            padding: 10px 20px; border-radius: 20px; margin-bottom: 15px;
+            background: transparent; color: var(--accent-season); border: 1px solid var(--accent-season);
+            padding: 10px 20px; border-radius: 20px; margin-bottom: 25px; /* Más espacio para evitar solapamiento */
             cursor: pointer; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase;
         }
 
@@ -146,6 +154,11 @@
     </style>
 </head>
 <body>
+
+    <div class="season-banner" id="bannerPrincipal">
+        ✦ LEM MODA | ELITE PROGRAM ✦
+    </div>
+
     <div id="modalBeneficios" class="modal">
         <div class="modal-content">
             <h3 style="color: var(--lem-gold); letter-spacing: 2px;">BENEFICIOS LEM</h3>
@@ -182,9 +195,7 @@
                 <div class="card-logo-box"><img src="1.png.png" class="card-logo"></div>
                 <div class="stamp-grid" id="stampGrid"></div>
                 <p id="counterLabel" style="color: var(--lem-gold); font-size: 0.75rem; letter-spacing: 1px;">Sincronizando...</p>
-                
                 <div id="premioNotif" class="premio-box"></div>
-
                 <div style="background:#fff; padding:8px; border-radius:12px; display:inline-block; margin-top: 10px;">
                     <canvas id="qr-canvas"></canvas>
                 </div>
@@ -195,12 +206,38 @@
     </div>
 
     <script>
+        // CONFIGURACIÓN DE FIREBASE (INTACTA)
         const firebaseConfig = { 
             databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
             appId: "1:901791881107:web:e1ff85e3fc768064eeba66"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        // LÓGICA DE TEMPORADA AUTOMATIZADA
+        function actualizarTemporada() {
+            const meses = [
+                { t: "✦ INICIO DE AÑO | RENUEVA TU ESENCIA ✦", c: "#d4a373" }, // Enero
+                { t: "✦ SAN VALENTÍN | DETALLES CON ESTILO ✦", c: "#a4161a" }, // Febrero
+                { t: "✦ MES DE LA MUJER | INSPIRACIÓN Y PODER ✦", c: "#9b5de5" }, // Marzo
+                { t: "✦ COLECCIÓN ESENCIAL | SOFISTICACIÓN ATEMPORAL ✦", c: "#d4a373" }, // Abril
+                { t: "✦ MES DE LA MADRE | ELEGANCIA PARA ELLA ✦", c: "#f8adbc" }, // Mayo
+                { t: "✦ MES DEL PADRE | ESTILO PARA ÉL ✦", c: "#8db6d4" }, // Junio
+                { t: "✦ TEMPORADA DE VERANO | FRESCURA EXCLUSIVA ✦", c: "#e9c46a" }, // Julio
+                { t: "✦ NUEVOS INGRESOS | VANGUARDIA EN CADA HILO ✦", c: "#38b000" }, // Agosto
+                { t: "✦ TRANSICIÓN DE ESTILO | NUDE ESSENCE ✦", c: "#b08968" }, // Septiembre
+                { t: "✦ EDICIÓN ESPECIAL | SOFISTICACIÓN ABSOLUTA ✦", c: "#bc6c25" }, // Octubre
+                { t: "✦ LEM BLACK | EXCLUSIVIDAD A TU ALCANCE ✦", c: "#bdc3c7" }, // Noviembre
+                { t: "✦ NAVIDAD LEM | EL REGALO PERFECTO ✦", c: "#d4af37" }  // Diciembre
+            ];
+
+            const mesActual = new Date().getMonth();
+            const banner = document.getElementById('bannerPrincipal');
+            
+            banner.innerText = meses[mesActual].t;
+            document.documentElement.style.setProperty('--accent-season', meses[mesActual].c);
+        }
+        actualizarTemporada();
 
         function toggleModal(show) {
             document.getElementById('modalBeneficios').style.display = show ? 'flex' : 'none';
@@ -237,14 +274,13 @@
                     s.className = 'slot' + (isActive ? ' active' : '');
                     s.setAttribute('data-index', index);
 
-                    // Aplicar marcos en 4 y 8
                     if(index === 4) s.classList.add('silver-frame');
                     if(index === 8) s.classList.add('gold-frame');
 
                     if(isActive) {
                         s.innerHTML = '<img src="2.png.png">';
                     } else {
-                        // Textos dentro de los círculos vacíos
+                        // TEXTOS DE SELLOS (MANTENIDOS INTACTOS)
                         if(index === 4) s.innerHTML = '<span class="premio-text silver">50% OFF<br>PRENDA</span>';
                         else if (index === 8) s.innerHTML = '<span class="premio-text gold">PRENDA<br>REGALO</span>';
                         else s.innerHTML = ''; 
