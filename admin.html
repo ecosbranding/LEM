@@ -30,21 +30,18 @@
         .btn-scan-again { background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold); margin-top: 20px; width: 100%; padding: 15px; border-radius: 15px; font-weight: bold; text-transform: uppercase; }
         .status-msg { color: var(--lem-verde); font-weight: bold; margin-top: 15px; }
 
-        /* ALERTAS DE PREMIO REFINADAS */
         .reward-alert { 
             padding: 15px; border-radius: 15px; margin: 15px 0; display: none;
             border-width: 2px; border-style: solid;
             animation: pulse-soft 2s infinite;
         }
 
-        /* Estilo Plata para Admin */
         .alert-silver { 
             background: rgba(189, 195, 199, 0.1); 
             border-color: var(--silver-admin); 
             color: var(--silver-admin);
         }
 
-        /* Estilo Oro para Admin */
         .alert-gold { 
             background: rgba(212, 175, 55, 0.1); 
             border-color: var(--gold-admin); 
@@ -92,7 +89,6 @@
     </div>
 
     <script>
-        // MANTENGO TU CONFIGURACIÓN DE FIREBASE E INICIO
         const firebaseConfig = { 
             databaseURL: "https://lem-moda-loyalty-default-rtdb.firebaseio.com/",
             appId: "1:901791881107:web:e1ff85e3fc768064eeba66"
@@ -101,6 +97,20 @@
         const db = firebase.database();
 
         let html5QrCode;
+
+        // NUEVA FUNCIÓN: Registra la acción en una carpeta por fecha
+        function registrarLog(phone, accion, puntosNuevos) {
+            const hoy = new Date().toISOString().split('T')[0]; // Ejemplo: 2026-05-10
+            const logRef = db.ref('historial_acciones/' + hoy).push();
+            
+            logRef.set({
+                whatsapp: phone,
+                accion: accion,
+                puntos_resultantes: puntosNuevos,
+                hora: new Date().toLocaleTimeString(),
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
 
         async function startScanner() {
             html5QrCode = new Html5Qrcode("reader");
@@ -130,8 +140,6 @@
             const alertBox = document.getElementById('adminRewardAlert');
             const alertText = document.getElementById('rewardText');
             const resetBtn = document.getElementById('resetBtn');
-
-            // Limpiar clases previas
             alertBox.classList.remove('alert-silver', 'alert-gold');
 
             if (puntos === 4) {
@@ -153,9 +161,18 @@
         function adjustPoints(change) {
             const phone = document.getElementById('clientPhone').innerText.replace("WhatsApp: ", "");
             const ref = db.ref('lem_users/' + phone + '/puntos');
+            
             ref.transaction((c) => {
                 let newVal = (c || 0) + change;
-                return (newVal < 0) ? 0 : (newVal > 8 ? 8 : newVal);
+                const finalVal = (newVal < 0) ? 0 : (newVal > 8 ? 8 : newVal);
+                
+                // Si el valor cambió, registramos en el log diario
+                if (c !== finalVal) {
+                    const tipoAccion = change > 0 ? "Sello Agregado" : "Sello Quitado";
+                    registrarLog(phone, tipoAccion, finalVal);
+                }
+                
+                return finalVal;
             });
         }
 
@@ -163,6 +180,7 @@
             if(confirm("¿Confirmas que ya entregaste el premio y quieres reiniciar los puntos a 0?")) {
                 const phone = document.getElementById('clientPhone').innerText.replace("WhatsApp: ", "");
                 db.ref('lem_users/' + phone + '/puntos').set(0);
+                registrarLog(phone, "Premio Entregado - Reset", 0);
             }
         }
 
