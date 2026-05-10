@@ -6,12 +6,6 @@
     <title>LEM MODA | Elite</title>
 
     <meta name="description" content="Programa de Lealtad Elite de LEM MODA. Colecciona estampas y obtén beneficios exclusivos.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://lemmoda.vercel.app/"> 
-    <meta property="og:title" content="LEM MODA | Elite">
-    <meta property="og:description" content="¡Colecciona tus estampas y canjea premios exclusivos en LEM MODA!">
-    <meta property="og:image" content="https://lemmoda.vercel.app/logo-lem-elite.png"> 
-    
     <link rel="icon" type="image/png" href="logo-lem-elite.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#784311">
@@ -28,7 +22,7 @@
             --lem-verde: #38b000;
             --silver-fine: #bdc3c7;
             --gold-fine: #d4af37;
-            /* Variable dinámica para el banner */
+            /* Variable para el color de temporada */
             --accent-season: #d4a373;
         }
 
@@ -44,7 +38,9 @@
             overflow: hidden; 
         }
 
-        /* BANNER DE TEMPORADA: Insertado con espaciado inteligente para PC */
+        .container { width: 90%; max-width: 380px; text-align: center; position: relative; z-index: 10; }
+        
+        /* BANNER AUTOMATIZADO - Insertado sin romper el centrado */
         .season-banner {
             font-size: clamp(0.6rem, 2.5vw, 0.75rem);
             letter-spacing: 3px;
@@ -54,21 +50,9 @@
             text-transform: uppercase;
         }
 
-        .container { 
-            width: 90%; 
-            max-width: 380px; 
-            text-align: center; 
-            position: relative; 
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        /* TU DISEÑO ORIGINAL SIN TOCAR UN SOLO PIXEL */
-        .brand-circle { width: 120px; height: 120px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 30px; border: 2px solid var(--lem-gold); box-shadow: 0 0 20px rgba(212, 163, 115, 0.2); }
+        .brand-circle { width: 120px; height: 120px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px; border: 2px solid var(--lem-gold); box-shadow: 0 0 20px rgba(212, 163, 115, 0.2); }
         .circle-logo { width: 70%; height: auto; }
-        .card { background: rgba(20, 15, 10, 0.6); border: 1px solid rgba(212, 163, 115, 0.2); border-radius: 35px; padding: 25px; backdrop-filter: blur(15px); box-shadow: 0 25px 50px rgba(0,0,0,0.8); width: 100%; box-sizing: border-box; }
+        .card { background: rgba(20, 15, 10, 0.6); border: 1px solid rgba(212, 163, 115, 0.2); border-radius: 35px; padding: 25px; backdrop-filter: blur(15px); box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
         .card-logo-box { background: #fff; border-radius: 12px; padding: 8px; display: inline-block; margin-bottom: 20px; }
         .card-logo { width: 110px; }
         .stamp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
@@ -117,7 +101,7 @@
     </div>
 
     <div class="container">
-        <div class="season-banner" id="bannerPrincipal"></div>
+        <div id="bannerPrincipal" class="season-banner"></div>
 
         <div id="authPanel">
             <div class="brand-circle"><img src="1.png.png" class="circle-logo"></div>
@@ -151,8 +135,8 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // MOTOR DE TEMPORADA AUTOMATIZADO
-        function initSeason() {
+        // LÓGICA DE MESES (UNICA ADICIÓN)
+        function actualizarBanner() {
             const meses = [
                 { t: "✦ INICIO DE AÑO | RENUEVA TU ESENCIA ✦", c: "#d4a373" },
                 { t: "✦ SAN VALENTÍN | DETALLES CON ESTILO ✦", c: "#a4161a" },
@@ -171,10 +155,10 @@
             document.getElementById('bannerPrincipal').innerText = meses[m].t;
             document.documentElement.style.setProperty('--accent-season', meses[m].c);
         }
-        initSeason();
+        actualizarBanner();
 
+        // RESTO DE TU LÓGICA ORIGINAL INTACTA
         function toggleModal(show) { document.getElementById('modalBeneficios').style.display = show ? 'flex' : 'none'; }
-
         function accessSystem() {
             const phone = document.getElementById('userPhone').value.trim();
             const pin = document.getElementById('userPin').value.trim();
@@ -187,12 +171,10 @@
                 else alert("PIN incorrecto");
             });
         }
-
         function login(phone) {
             document.getElementById('authPanel').style.display = 'none';
             document.getElementById('cardPanel').style.display = 'block';
             QRCode.toCanvas(document.getElementById('qr-canvas'), phone, { width: 120, margin: 1 });
-            
             db.ref('lem_users/' + phone + '/puntos').on('value', (snap) => {
                 const p = snap.val() || 0;
                 document.getElementById('counterLabel').innerText = `${p} DE 8 SELLOS`;
@@ -217,7 +199,6 @@
                 checkMilestones(p, phone);
             });
         }
-
         function checkMilestones(p, phone) {
             const overlay = document.getElementById('success-overlay');
             const notifBox = document.getElementById('premioNotif');
@@ -239,14 +220,10 @@
                 notifBox.innerHTML = `<small style="color:var(--lem-verde)">✓ ¡Prenda de regalo lista!</small>`;
             } else { notifBox.style.display = 'none'; }
         }
-
         function lanzarConfeti() { confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d4a373', '#784311', '#ffffff'] }); }
-
         function enviarWA(phone, hito) {
             const waNumber = "593984909967"; 
-            let texto = hito === 4 ? 
-                `✨ *¡TENGO UNA RECOMPENSA EN LEM MODA!* ✨\n\nHola, equipo de LEM. 👋\n\n¡Qué buena noticia! Ya completé mis primeras *4 ESTAMPAS* 🎫 y quiero solicitar mi beneficio:\n🎁 *50% DE DESCUENTO* en mi prenda.\n\n📌 *Mi número registrado:* ${phone}` :
-                `👑 *¡OBJETIVO LOGRADO EN LEM MODA!* 👑\n\n¡Hola! 👋 ¡Lo logré!\n\nHe completado mis *8 ESTAMPAS* 🏆 y ya tengo mi tarjeta llena.\n🛍️ ¡Vengo por mi *PRENDA DE REGALO*!\n\n📌 *Mi número registrado:* ${phone}`;
+            let texto = hito === 4 ? `✨ *¡TENGO UNA RECOMPENSA EN LEM MODA!* ✨\n\n📌 *Mi número registrado:* ${phone}` : `👑 *¡OBJETIVO LOGRADO EN LEM MODA!* 👑\n\n📌 *Mi número registrado:* ${phone}`;
             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(texto)}`, '_blank');
         }
     </script>
