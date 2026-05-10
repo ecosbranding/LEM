@@ -56,7 +56,6 @@
         
         .stamp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
         
-        /* Estilos base de los slots */
         .slot { 
             aspect-ratio: 1; background: rgba(0,0,0,0.8); 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
@@ -71,33 +70,14 @@
         .slot::before { content: attr(data-index); color: #444; font-weight: bold; position: absolute; font-size: 0.7rem; }
         .slot.active::before { display: none; }
 
-        /* MARCOS ESPECIALES SUTILES (HITO 4 Y 8) */
-        .slot-premio { border-width: 1.5px !important; }
-        
-        .silver-frame { 
-            border-color: var(--silver-fine) !important;
-            box-shadow: 0 0 10px rgba(189, 195, 199, 0.2);
-            animation: shine-silver 4s infinite;
-        }
-        
-        .gold-frame { 
-            border-color: var(--gold-fine) !important;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
-            animation: shine-gold 4s infinite;
-        }
+        /* MARCOS ESPECIALES */
+        .silver-frame { border: 1.5px solid var(--silver-fine) !important; box-shadow: 0 0 10px rgba(189, 195, 199, 0.2); }
+        .gold-frame { border: 1.5px solid var(--gold-fine) !important; box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
 
-        .premio-text { font-size: 0.55rem; color: #fff; line-height: 1.1; font-weight: bold; padding: 2px; }
+        .premio-text { font-size: 0.55rem; line-height: 1.1; font-weight: bold; padding: 2px; }
         .premio-text.silver { color: #bdc3c7; }
         .premio-text.gold { color: #d4af37; }
 
-        @keyframes shine-silver {
-            0% { border-color: #7f8c8d; } 50% { border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.3); } 100% { border-color: #7f8c8d; }
-        }
-        @keyframes shine-gold {
-            0% { border-color: #917617; } 50% { border-color: #f7e08b; box-shadow: 0 0 15px rgba(247,224,139,0.3); } 100% { border-color: #917617; }
-        }
-
-        /* Resto de estilos (Entradas, Botones, Modales) */
         .input-box { background: #000; border: 1px solid rgba(212, 163, 115, 0.2); color: #fff; padding: 16px; border-radius: 15px; width: 100%; margin-bottom: 12px; box-sizing: border-box; text-align: center; outline: none; }
         .btn-main { background: linear-gradient(135deg, #d4a373 0%, #b08968 100%); color: #000; border: none; padding: 16px; border-radius: 15px; width: 100%; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
         .btn-beneficios { background: transparent; color: var(--lem-gold); border: 1px solid var(--lem-gold); padding: 10px 20px; border-radius: 20px; margin-bottom: 15px; cursor: pointer; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; }
@@ -124,7 +104,7 @@
         <div class="success-card">
             <div class="card-logo-box"><img src="1.png.png" style="width: 100px;"></div>
             <h2 id="successTitle" style="color: var(--lem-gold); font-weight: 300; letter-spacing: 2px;">¡Felicidades!</h2>
-            <p id="successMsg" style="font-size: 0.85rem; color: #aaa; line-height: 1.5;">Has completado tus beneficios exclusivos en LEM MODA.</p>
+            <p id="successMsg" style="font-size: 0.85rem; color: #aaa; line-height: 1.5;"></p>
             <div id="waAction"></div>
             <button class="btn-main" style="margin-top: 15px; background: transparent; color: #555; border: 1px solid #222;" onclick="document.getElementById('success-overlay').style.display='none'">Volver</button>
         </div>
@@ -193,25 +173,19 @@
                     const s = document.createElement('div');
                     const isActive = i < p;
                     const index = i + 1;
-                    
                     s.className = 'slot' + (isActive ? ' active' : '');
                     s.setAttribute('data-index', index);
 
-                    // APLICAR MARCOS ESPECIALES
-                    if(index === 4) s.classList.add('slot-premio', 'silver-frame');
-                    if(index === 8) s.classList.add('slot-premio', 'gold-frame');
+                    // APLICAR MARCOS ESPECIALES EN 4 Y 8
+                    if(index === 4) s.classList.add('silver-frame');
+                    if(index === 8) s.classList.add('gold-frame');
 
-                    // CONTENIDO DEL SELLO
                     if(isActive) {
                         s.innerHTML = '<img src="2.png.png">';
                     } else {
-                        if(index === 4) {
-                            s.innerHTML = '<span class="premio-text silver">50% OFF<br>EN PRENDA</span>';
-                        } else if (index === 8) {
-                            s.innerHTML = '<span class="premio-text gold">PRENDA<br>GRATIS</span>';
-                        } else {
-                            s.innerHTML = ''; // Se usa el data-index (CSS)
-                        }
+                        if(index === 4) s.innerHTML = '<span class="premio-text silver">50% OFF<br>PRENDA</span>';
+                        else if (index === 8) s.innerHTML = '<span class="premio-text gold">PRENDA<br>REGALO</span>';
+                        else s.innerHTML = ''; 
                     }
                     grid.appendChild(s);
                 }
@@ -219,7 +193,6 @@
             });
         }
 
-        // [MANTENGO TUS FUNCIONES checkMilestones, lanzarConfeti y enviarWA IGUALES]
         function checkMilestones(p, phone) {
             const overlay = document.getElementById('success-overlay');
             const title = document.getElementById('successTitle');
@@ -254,9 +227,22 @@
 
         function enviarWA(phone, hito) {
             const waNumber = "593984909967"; 
-            let texto = (hito === 4) ? 
-                `✨ *¡TENGO UNA RECOMPENSA EN LEM MODA!* ✨\n\nHola equipo de LEM. 👋 Ya completé mis *4 ESTAMPAS* y quiero mi *50% DE DESCUENTO*. Mi # es: ${phone}` :
-                `👑 *¡OBJETIVO LOGRADO EN LEM MODA!* 👑\n\n¡Hola! 👋 He completado mis *8 ESTAMPAS* y vengo por mi *PRENDA DE REGALO*. Mi # es: ${phone}`;
+            let texto = "";
+            if (hito === 4) {
+                texto = `✨ *¡TENGO UNA RECOMPENSA EN LEM MODA!* ✨\n\n` +
+                        `Hola, equipo de *LEM*. 👋\n\n` +
+                        `¡Qué buena noticia! Ya completé mis primeras *4 ESTAMPAS* 🎫 y quiero solicitar mi beneficio:\n` +
+                        `🎁 *50% DE DESCUENTO* en mi prenda.\n\n` +
+                        `📌 *Mi número registrado:* ${phone}\n\n` +
+                        `¿Me ayudan para hacerlo efectivo en mi compra? ¡Muchas gracias! 🥂`;
+            } else {
+                texto = `👑 *¡OBJETIVO LOGRADO EN LEM MODA!* 👑\n\n` +
+                        `¡Hola! 👋 ¡Lo logré!\n\n` +
+                        `He completado mis *8 ESTAMPAS* 🏆 y ya tengo mi tarjeta llena.\n` +
+                        `🛍️ ¡Vengo por mi *PRENDA DE REGALO*!\n\n` +
+                        `📌 *Mi número registrado:* ${phone}\n\n` +
+                        `Estoy muy emocionado/a por elegir mi regalo. ¡Gracias! ✨`;
+            }
             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(texto)}`, '_blank');
         }
     </script>
